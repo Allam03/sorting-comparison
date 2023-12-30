@@ -2,26 +2,17 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Arrays;
 
-public class Visualization extends JFrame {
+public class Visualization extends JPanel {
     private int[] data;
 
     public Visualization() {
-        setTitle("Bar Plot");
-        setSize(1680, 800);
-        setLocationRelativeTo(null);
-
         data = new int[] {};
+    }
 
-        JPanel panel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                drawBarPlot(g);
-            }
-        };
-
-        getContentPane().add(panel);
-        setVisible(true);
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        drawBarPlot(g);
     }
 
     private void drawBarPlot(Graphics g) {
@@ -35,9 +26,9 @@ public class Visualization extends JFrame {
         int maxData = Arrays.stream(data).max().orElse(0);
 
         for (int i = 0; i < data.length; i++) {
-            int barHeight = (int) (((double) data[i] / maxData) * (height - 100)) + 1;
-            int x = i * barWidth + 30;
-            int y = height - barHeight - 30;
+            int barHeight = (int) (((double) data[i] / maxData) * (height - 100));
+            int x = i * barWidth + 25;
+            int y = height - barHeight - 25;
 
             g.setColor(Color.BLUE);
             g.fillRect(x, y, barWidth, barHeight);
