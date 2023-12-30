@@ -12,49 +12,62 @@ public class GUI extends JFrame implements ActionListener {
     private int[] array;
     private long time;
     private int[] stats;
+    private JTextField arrayLengthField, delayField;
+    private int length, delay;
 
     public GUI() {
         setTitle("Sorting Algorithms");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1680, 800);
         setLocationRelativeTo(null);
-
-        JPanel buttonPanel = new JPanel(new GridLayout(1, 3));
-        countingSortButton = new JButton("Counting Sort");
-        bubbleSortButton = new JButton("Bubble Sort");
-        quickSortButton = new JButton("Quick Sort");
-        resultLabel = new JLabel();
-
-        buttonPanel.add(countingSortButton);
-        buttonPanel.add(bubbleSortButton);
-        buttonPanel.add(quickSortButton);
-
         JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, createTopPanel(), createVisualizationPanel());
         splitPane.setResizeWeight(0.5);
-
         add(splitPane);
         setVisible(true);
 
-        int length = 10;
+        stats = new int[] {0, 0};
+        length = 10;
+        delay = 5;
         randomArray = ArrayGenerator.generateRandom(length);
+    }
 
-        countingSortButton.addActionListener(this);
-        bubbleSortButton.addActionListener(this);
-        quickSortButton.addActionListener(this);
+    private JPanel createInputPanel() {
+        JPanel inputPanel = new JPanel();
+
+        arrayLengthField = new JTextField(10);
+        delayField = new JTextField(10);
+        delayField.addActionListener(this);
+        arrayLengthField.addActionListener(this);
+        inputPanel.add(new JLabel("Array Length: "));
+        inputPanel.add(arrayLengthField);
+        inputPanel.add(new JLabel("Delay in ms: "));
+        inputPanel.add(delayField);
+        return inputPanel;
     }
 
     private JPanel createTopPanel() {
         JPanel panel = new JPanel(new BorderLayout());
+        resultLabel = new JLabel();
         panel.add(resultLabel, BorderLayout.SOUTH);
+        panel.add(createInputPanel(), BorderLayout.CENTER);
         panel.add(createButtonPanel(), BorderLayout.NORTH);
         return panel;
     }
 
     private JPanel createButtonPanel() {
         JPanel buttonPanel = new JPanel(new GridLayout(1, 3));
+        countingSortButton = new JButton("Counting Sort");
+        bubbleSortButton = new JButton("Bubble Sort");
+        quickSortButton = new JButton("Quick Sort");
+
         buttonPanel.add(countingSortButton);
         buttonPanel.add(bubbleSortButton);
         buttonPanel.add(quickSortButton);
+
+        countingSortButton.addActionListener(this);
+        bubbleSortButton.addActionListener(this);
+        quickSortButton.addActionListener(this);
+
         return buttonPanel;
     }
 
@@ -67,12 +80,34 @@ public class GUI extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == countingSortButton) {
+        if (e.getSource() == arrayLengthField) {
+            try {
+                int newLength = Integer.parseInt(arrayLengthField.getText());
+                if (newLength > 0) {
+                    randomArray = ArrayGenerator.generateRandom(newLength);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Length must be a positive integer.");
+                }
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Invalid input for length.");
+            }
+        }else if(e.getSource() == delayField){
+            try {
+                int newDelay = Integer.parseInt(delayField.getText());
+                if (newDelay > 0) {
+                    delay = newDelay;
+                } else {
+                    JOptionPane.showMessageDialog(this, "Delay must be a positive integer.");
+                }
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Invalid input for delay.");
+            }
+        } else if (e.getSource() == countingSortButton) {
             array = randomArray.clone();
             time = System.nanoTime();
             Sorting.countingSort(array);
             time = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - time);
-            resultLabel.setText("Counting Sort took " + time + "ms to run");
+            
         } else if (e.getSource() == bubbleSortButton) {
 
             array = randomArray.clone();
@@ -83,14 +118,17 @@ public class GUI extends JFrame implements ActionListener {
                 @Override
                 protected Void doInBackground() {
                     array = randomArray.clone();
-                    stats = SortingStats.bubbleSort(array, viz);
+                    stats[0] = 0;
+                    stats[1] = 0;
+                    SortingStats.bubbleSort(array, stats, viz, delay);
                     return null;
                 }
+
                 @Override
                 protected void done() {
-                    resultLabel.setText("Bubble Sort took " + time + "ms to run, " +
-                    stats[0] + " Swaps, " +
-                    stats[1] + " Comparisons.");
+                    resultLabel.setText(time + "ms, " +
+                            stats[0] + " Swaps, " +
+                            stats[1] + " Comparisons.");
                 }
             };
             worker.execute();
@@ -99,7 +137,7 @@ public class GUI extends JFrame implements ActionListener {
             time = System.nanoTime();
             Sorting.quickSort(array, 0, array.length - 1);
             time = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - time);
-            resultLabel.setText("Quick Sort took " + time + "ms to run");
+            
         }
     }
 }

@@ -6,28 +6,25 @@ public class SortingStats {
         array[j] = temp;
     }
 
-    public static int[] bubbleSort(int array[], Visualization viz) {
-        int swaps = 0;
+    public static void bubbleSort(int array[], int[] stats, Visualization viz, int delay) {
         int prevSwaps = 0;
-        int comparisons = 0;
         for (int i = 0; i < array.length - 1; i++) {
             for (int j = 0; j < array.length - i - 1; j++) {
-                comparisons++;
+                stats[1]++;
                 if (array[j] > array[j + 1]) {
                     swap(array, j, j + 1);
-                    swaps++;
+                    stats[0]++;
                     viz.updateData(array);
                     try {
-                        Thread.sleep(5);
+                        Thread.sleep(delay);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
             }
-            if (prevSwaps == swaps)
+            if (prevSwaps == stats[0])
                     break;
-                prevSwaps = swaps;
+                prevSwaps = stats[0];
         }
-        return new int[] {swaps, comparisons};
     }
 }
