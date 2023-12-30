@@ -6,7 +6,7 @@ public class ArrayGenerator {
         //rand.setSeed(123);
         int output[] = new int[length];
         for (int i = 0; i < output.length; i++){
-            output[i] = rand.nextInt(length + 2) - 1;
+            output[i] = rand.nextInt(length) + 1;
         }
         return output;
     }

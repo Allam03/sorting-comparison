@@ -7,8 +7,10 @@ public class Main {
 
         System.out.print("Enter length of array: ");
         int length = input.nextInt();
+        int[] array;
         int[] randomArray = ArrayGenerator.generateRandom(length);
         int choice = -1;
+        
         while (choice != 0) {
             System.out.println("Enter 1 for Counting sort" +
                     "\nEnter 2 for Bubble Sort" +
@@ -18,7 +20,7 @@ public class Main {
             System.out.println();
             switch (choice) {
                 case 1: {
-                    int[] array = randomArray.clone();
+                    array = randomArray.clone();
                     long time = System.nanoTime();
                     Sorting.countingSort(array);
                     time = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - time);
@@ -26,15 +28,18 @@ public class Main {
                     break;
                 }
                 case 2: {
-                    int[] array = randomArray.clone();
+                    array = randomArray.clone();
                     long time = System.nanoTime();
                     Sorting.bubbleSort(array);
                     time = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - time);
+
+                    array = randomArray.clone();
+                    SortingStats.bubbleSort(array);
                     System.out.println("Took " + time + "ms to run\n");
                     break;
                 }
                 case 3: {
-                    int[] array = randomArray.clone();
+                    array = randomArray.clone();
                     long time = System.nanoTime();
                     Sorting.quickSort(array, 0, length - 1);
                     time = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - time);
