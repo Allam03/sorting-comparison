@@ -5,7 +5,7 @@ import java.awt.event.ActionListener;
 import java.util.concurrent.TimeUnit;
 
 public class GUI extends JFrame implements ActionListener {
-    private JButton countingSortButton, bubbleSortButton, quickSortButton;
+    private JButton countingSortButton, bubbleSortButton, quickSortButton, randomizeArrayButton;
     private JLabel resultLabel;
     private Visualization viz;
     private int[] randomArray;
@@ -55,18 +55,21 @@ public class GUI extends JFrame implements ActionListener {
     }
 
     private JPanel createButtonPanel() {
-        JPanel buttonPanel = new JPanel(new GridLayout(1, 3));
+        JPanel buttonPanel = new JPanel(new GridLayout(1, 4));
         countingSortButton = new JButton("Counting Sort");
         bubbleSortButton = new JButton("Bubble Sort");
         quickSortButton = new JButton("Quick Sort");
+        randomizeArrayButton = new JButton("Randomize Array");
 
         buttonPanel.add(countingSortButton);
         buttonPanel.add(bubbleSortButton);
         buttonPanel.add(quickSortButton);
+        buttonPanel.add(randomizeArrayButton);
 
         countingSortButton.addActionListener(this);
         bubbleSortButton.addActionListener(this);
         quickSortButton.addActionListener(this);
+        randomizeArrayButton.addActionListener(this);
 
         return buttonPanel;
     }
@@ -80,11 +83,14 @@ public class GUI extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == arrayLengthField) {
+        if (e.getSource() == randomizeArrayButton) {
+            randomArray = ArrayGenerator.generateRandom(length);
+        } else if (e.getSource() == arrayLengthField) {
             try {
                 int newLength = Integer.parseInt(arrayLengthField.getText());
                 if (newLength > 0) {
-                    randomArray = ArrayGenerator.generateRandom(newLength);
+                    length = newLength;
+                    randomArray = ArrayGenerator.generateRandom(length);
                 } else {
                     JOptionPane.showMessageDialog(this, "Length must be a positive integer.");
                 }
@@ -118,7 +124,7 @@ public class GUI extends JFrame implements ActionListener {
                 }
 
                 @Override
-                protected void done(){
+                protected void done() {
                     resultLabel.setText(time + "ms, " +
                             stats[0] + " Swaps, " +
                             stats[1] + " Comparisons.");
