@@ -113,6 +113,24 @@ public class GUI extends JFrame implements ActionListener {
         }
     }
 
+    public void disableInput() {
+        countingSortButton.setEnabled(false);
+        bubbleSortButton.setEnabled(false);
+        quickSortButton.setEnabled(false);
+        randomizeArrayButton.setEnabled(false);
+        arrayLengthField.setEnabled(false);
+        delayField.setEnabled(false);
+    }
+
+    public void enableInput() {
+        countingSortButton.setEnabled(true);
+        bubbleSortButton.setEnabled(true);
+        quickSortButton.setEnabled(true);
+        randomizeArrayButton.setEnabled(true);
+        arrayLengthField.setEnabled(true);
+        delayField.setEnabled(true);
+    }
+
     public void randomizeArray() {
         randomArray = ArrayGenerator.generateRandom(length);
     }
@@ -145,6 +163,7 @@ public class GUI extends JFrame implements ActionListener {
     }
 
     public void performCountingSort() {
+        disableInput();
         array = randomArray.clone();
         time = System.nanoTime();
         Sorting.countingSort(array);
@@ -161,6 +180,7 @@ public class GUI extends JFrame implements ActionListener {
 
             @Override
             protected void done() {
+                enableInput();
                 resultLabel.setText(time + "ms, " +
                         stats[0] + " Swaps, " +
                         stats[1] + " Comparisons.");
@@ -170,7 +190,8 @@ public class GUI extends JFrame implements ActionListener {
 
     }
 
-    private void performQuickSort() {
+    private void performBubbleSort() {
+        disableInput();
         array = randomArray.clone();
         time = System.nanoTime();
         Sorting.bubbleSort(array);
@@ -187,6 +208,7 @@ public class GUI extends JFrame implements ActionListener {
 
             @Override
             protected void done() {
+                enableInput();
                 resultLabel.setText(time + "ms, " +
                         stats[0] + " Swaps, " +
                         stats[1] + " Comparisons.");
@@ -195,7 +217,8 @@ public class GUI extends JFrame implements ActionListener {
         worker.execute();
     }
 
-    private void performBubbleSort() {
+    private void performQuickSort() {
+        disableInput();
         array = randomArray.clone();
         time = System.nanoTime();
         Sorting.quickSort(array, 0, array.length - 1);
@@ -212,6 +235,7 @@ public class GUI extends JFrame implements ActionListener {
 
             @Override
             protected void done() {
+                enableInput();
                 resultLabel.setText(time + "ms, " +
                         stats[0] + " Swaps, " +
                         stats[1] + " Comparisons.");
