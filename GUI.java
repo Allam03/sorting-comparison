@@ -9,10 +9,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GUI extends JFrame implements ActionListener {
-    private JButton countingSortButton, bubbleSortButton, quickSortButton, randomizeArrayButton, abortButton,
-            compareButton;
+    private JButton sortButton, randomizeArrayButton, abortButton, compareButton;
     private JLabel resultLabel;
     private JCheckBox visualizeCheckBox;
+    private JComboBox<String> methodMenu;
     private JTextField arrayLengthField, delayField;
     private Visualization viz;
     private SwingWorker<Void, Void> currentWorker;
@@ -32,9 +32,9 @@ public class GUI extends JFrame implements ActionListener {
         add(splitPane);
         setVisible(true);
 
-        swaps_comparisons = new long[] { 0, 0};
-        compareStatsLong = new long[] {0, 0, 0};
-        compareStatsInt = new int[] {0, 0, 0};
+        swaps_comparisons = new long[] { 0, 0 };
+        compareStatsLong = new long[] { 0, 0, 0 };
+        compareStatsInt = new int[] { 0, 0, 0 };
         length = 10;
         delay = 5;
         randomArray = ArrayGenerator.generateRandom(length);
@@ -42,9 +42,7 @@ public class GUI extends JFrame implements ActionListener {
         actionMap = new HashMap<>();
         actionMap.put(arrayLengthField, () -> updateArrayLength());
         actionMap.put(delayField, () -> updateDelay());
-        actionMap.put(countingSortButton, () -> performCountingSort());
-        actionMap.put(bubbleSortButton, () -> performBubbleSort());
-        actionMap.put(quickSortButton, () -> performQuickSort());
+        actionMap.put(sortButton, () -> performSort());
         actionMap.put(randomizeArrayButton, () -> randomizeArray());
         actionMap.put(abortButton, () -> performAbort());
         actionMap.put(compareButton, () -> performCompare());
@@ -88,25 +86,22 @@ public class GUI extends JFrame implements ActionListener {
 
     private JPanel createButtonPanel() {
         JPanel buttonPanel = new JPanel(new GridLayout(1, 4));
-        countingSortButton = new JButton("Counting Sort");
-        bubbleSortButton = new JButton("Bubble Sort");
-        quickSortButton = new JButton("Quick Sort");
+        sortButton = new JButton("Sort");
         randomizeArrayButton = new JButton("Randomize Array");
         visualizeCheckBox = new JCheckBox("Visualize");
         abortButton = new JButton("Abort");
         compareButton = new JButton("Compare Methods");
+        String[] str = { "Counting", "Bubble", "Quick" };
+        methodMenu = new JComboBox<>(str);
 
-        buttonPanel.add(countingSortButton);
-        buttonPanel.add(bubbleSortButton);
-        buttonPanel.add(quickSortButton);
-        buttonPanel.add(randomizeArrayButton);
-        buttonPanel.add(visualizeCheckBox);
+        buttonPanel.add(methodMenu);
+        buttonPanel.add(sortButton);
         buttonPanel.add(abortButton);
+        buttonPanel.add(randomizeArrayButton);
         buttonPanel.add(compareButton);
+        buttonPanel.add(visualizeCheckBox);
 
-        countingSortButton.addActionListener(this);
-        bubbleSortButton.addActionListener(this);
-        quickSortButton.addActionListener(this);
+        sortButton.addActionListener(this);
         randomizeArrayButton.addActionListener(this);
         visualizeCheckBox.setSelected(true);
         abortButton.addActionListener(this);
@@ -131,25 +126,23 @@ public class GUI extends JFrame implements ActionListener {
     }
 
     public void disableInput() {
-        countingSortButton.setEnabled(false);
-        bubbleSortButton.setEnabled(false);
-        quickSortButton.setEnabled(false);
+        sortButton.setEnabled(false);
         randomizeArrayButton.setEnabled(false);
         arrayLengthField.setEnabled(false);
         delayField.setEnabled(false);
         visualizeCheckBox.setEnabled(false);
         compareButton.setEnabled(false);
+        methodMenu.setEnabled(false);
     }
 
     public void enableInput() {
-        countingSortButton.setEnabled(true);
-        bubbleSortButton.setEnabled(true);
-        quickSortButton.setEnabled(true);
+        sortButton.setEnabled(true);
         randomizeArrayButton.setEnabled(true);
         arrayLengthField.setEnabled(true);
         delayField.setEnabled(true);
         visualizeCheckBox.setEnabled(true);
         compareButton.setEnabled(true);
+        methodMenu.setEnabled(true);
     }
 
     public void randomizeArray() {
@@ -180,6 +173,23 @@ public class GUI extends JFrame implements ActionListener {
             }
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Invalid input for delay.");
+        }
+    }
+
+    public void performSort() {
+        String item = (String) methodMenu.getSelectedItem();
+        disableInput();
+        if (item.equals("Counting")) {
+            performCountingSort();
+            return;
+        }
+        if (item.equals("Bubble")) {
+            performBubbleSort();
+            return;
+        }
+        if (item.equals("Quick")) {
+            performQuickSort();
+            return;
         }
     }
 
