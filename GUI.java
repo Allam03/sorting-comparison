@@ -4,22 +4,22 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 public class GUI extends JFrame implements ActionListener {
-    private JButton countingSortButton, bubbleSortButton, quickSortButton, randomizeArrayButton, abortButton;
+    private JButton countingSortButton, bubbleSortButton, quickSortButton, randomizeArrayButton, abortButton,
+            compareButton;
     private JLabel resultLabel;
     private JCheckBox visualizeCheckBox;
     private JTextField arrayLengthField, delayField;
     private Visualization viz;
     private SwingWorker<Void, Void> currentWorker;
     private Map<Object, Runnable> actionMap;
-    private int[] randomArray;
-    private int[] array;
+    private int[] randomArray, sortedArray, inverselySortedArray, array, compareStatsInt;
     private long time;
-    private int[] stats;
+    private long[] swaps_comparisons, compareStatsLong;
     private int length, delay;
 
     public GUI() {
@@ -32,7 +32,9 @@ public class GUI extends JFrame implements ActionListener {
         add(splitPane);
         setVisible(true);
 
-        stats = new int[] { 0, 0 }; // swaps, comparisons
+        swaps_comparisons = new long[] { 0, 0};
+        compareStatsLong = new long[] {0, 0, 0};
+        compareStatsInt = new int[] {0, 0, 0};
         length = 10;
         delay = 5;
         randomArray = ArrayGenerator.generateRandom(length);
@@ -45,6 +47,7 @@ public class GUI extends JFrame implements ActionListener {
         actionMap.put(quickSortButton, () -> performQuickSort());
         actionMap.put(randomizeArrayButton, () -> randomizeArray());
         actionMap.put(abortButton, () -> performAbort());
+        actionMap.put(compareButton, () -> performCompare());
     }
 
     private JPanel createInputPanel() {
@@ -57,7 +60,6 @@ public class GUI extends JFrame implements ActionListener {
                 updateArrayLength();
             }
         });
-
         delayField = new JTextField("5", 5);
         delayField.addFocusListener(new FocusAdapter() {
             @Override
@@ -76,6 +78,7 @@ public class GUI extends JFrame implements ActionListener {
         JPanel panel = new JPanel(new BorderLayout());
         JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         resultLabel = new JLabel();
+
         labelPanel.add(resultLabel);
         panel.add(labelPanel, BorderLayout.SOUTH);
         panel.add(createInputPanel(), BorderLayout.CENTER);
@@ -91,6 +94,7 @@ public class GUI extends JFrame implements ActionListener {
         randomizeArrayButton = new JButton("Randomize Array");
         visualizeCheckBox = new JCheckBox("Visualize");
         abortButton = new JButton("Abort");
+        compareButton = new JButton("Compare Methods");
 
         buttonPanel.add(countingSortButton);
         buttonPanel.add(bubbleSortButton);
@@ -98,6 +102,7 @@ public class GUI extends JFrame implements ActionListener {
         buttonPanel.add(randomizeArrayButton);
         buttonPanel.add(visualizeCheckBox);
         buttonPanel.add(abortButton);
+        buttonPanel.add(compareButton);
 
         countingSortButton.addActionListener(this);
         bubbleSortButton.addActionListener(this);
@@ -105,6 +110,7 @@ public class GUI extends JFrame implements ActionListener {
         randomizeArrayButton.addActionListener(this);
         visualizeCheckBox.setSelected(true);
         abortButton.addActionListener(this);
+        compareButton.addActionListener(this);
 
         return buttonPanel;
     }
@@ -132,6 +138,7 @@ public class GUI extends JFrame implements ActionListener {
         arrayLengthField.setEnabled(false);
         delayField.setEnabled(false);
         visualizeCheckBox.setEnabled(false);
+        compareButton.setEnabled(false);
     }
 
     public void enableInput() {
@@ -142,6 +149,7 @@ public class GUI extends JFrame implements ActionListener {
         arrayLengthField.setEnabled(true);
         delayField.setEnabled(true);
         visualizeCheckBox.setEnabled(true);
+        compareButton.setEnabled(true);
     }
 
     public void randomizeArray() {
@@ -178,14 +186,14 @@ public class GUI extends JFrame implements ActionListener {
     public void performCountingSort() {
         disableInput();
         array = randomArray.clone();
-        stats[0] = 0;
-        stats[1] = 0;
-        time = System.nanoTime();
+        swaps_comparisons[0] = 0;
+        swaps_comparisons[1] = 0;
+        time = System.currentTimeMillis();
         Sorting.countingSort(array);
-        time = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - time);
+        time = System.currentTimeMillis() - time;
         resultLabel.setText(time + "ms, " +
-                stats[0] + " Swaps, " +
-                stats[1] + " Comparisons.");
+                swaps_comparisons[0] + " Swaps, " +
+                swaps_comparisons[1] + " Comparisons.");
         if (!visualizeCheckBox.isSelected()) {
             enableInput();
             return;
@@ -213,14 +221,14 @@ public class GUI extends JFrame implements ActionListener {
     private void performBubbleSort() {
         disableInput();
         array = randomArray.clone();
-        stats[0] = 0;
-        stats[1] = 0;
-        time = System.nanoTime();
-        Sorting.bubbleSort(array, stats);
-        time = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - time);
+        swaps_comparisons[0] = 0;
+        swaps_comparisons[1] = 0;
+        time = System.currentTimeMillis();
+        Sorting.bubbleSort(array, swaps_comparisons);
+        time = System.currentTimeMillis() - time;
         resultLabel.setText(time + "ms, " +
-                stats[0] + " Swaps, " +
-                stats[1] + " Comparisons.");
+                swaps_comparisons[0] + " Swaps, " +
+                swaps_comparisons[1] + " Comparisons.");
         if (!visualizeCheckBox.isSelected()) {
             enableInput();
             return;
@@ -239,7 +247,6 @@ public class GUI extends JFrame implements ActionListener {
             @Override
             protected void done() {
                 enableInput();
-
             }
         };
         currentWorker.execute();
@@ -248,14 +255,14 @@ public class GUI extends JFrame implements ActionListener {
     private void performQuickSort() {
         disableInput();
         array = randomArray.clone();
-        stats[0] = 0;
-        stats[1] = 0;
-        time = System.nanoTime();
-        Sorting.quickSort(array, 0, array.length - 1, stats);
-        time = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - time);
+        swaps_comparisons[0] = 0;
+        swaps_comparisons[1] = 0;
+        time = System.currentTimeMillis();
+        Sorting.quickSort(array, 0, array.length - 1, swaps_comparisons);
+        time = System.currentTimeMillis() - time;
         resultLabel.setText(time + "ms, " +
-                stats[0] + " Swaps, " +
-                stats[1] + " Comparisons.");
+                swaps_comparisons[0] + " Swaps, " +
+                swaps_comparisons[1] + " Comparisons.");
         if (!visualizeCheckBox.isSelected()) {
             enableInput();
             return;
@@ -274,7 +281,6 @@ public class GUI extends JFrame implements ActionListener {
             @Override
             protected void done() {
                 enableInput();
-
             }
         };
         currentWorker.execute();
@@ -286,5 +292,87 @@ public class GUI extends JFrame implements ActionListener {
             currentWorker = null;
             enableInput();
         }
+    }
+
+    private void performCompare() {
+        sortedArray = randomArray.clone();
+        Arrays.sort(sortedArray);
+        inverselySortedArray = sortedArray.clone();
+        Sorting.reverse(inverselySortedArray);
+    }
+
+    private void countingSortCompareRuntime() {
+        array = randomArray.clone();
+        time = System.currentTimeMillis();
+        Sorting.countingSort(array);
+        time = System.currentTimeMillis() - time;
+        compareStatsLong[0] = (int) time;
+
+        array = inverselySortedArray.clone();
+        time = System.currentTimeMillis();
+        Sorting.countingSort(array);
+        time = System.currentTimeMillis() - time;
+        compareStatsLong[1] = (int) time;
+
+        array = sortedArray.clone();
+        time = System.currentTimeMillis();
+        Sorting.countingSort(array);
+        time = System.currentTimeMillis() - time;
+        compareStatsLong[2] = (int) time;
+
+        for (int i = 0; i < 3; i++) {
+            compareStatsInt[i] = (int) compareStatsLong[i];
+        }
+        viz.updateData(compareStatsInt);
+    }
+
+    private void bubbleSortCompareRuntime() {
+        array = randomArray.clone();
+        time = System.currentTimeMillis();
+        Sorting.bubbleSort(array, swaps_comparisons);
+        time = System.currentTimeMillis() - time;
+        compareStatsLong[0] = (int) time;
+
+        array = inverselySortedArray.clone();
+        time = System.currentTimeMillis();
+        Sorting.bubbleSort(array, swaps_comparisons);
+        time = System.currentTimeMillis() - time;
+        compareStatsLong[1] = (int) time;
+
+        array = sortedArray.clone();
+        time = System.currentTimeMillis();
+        Sorting.bubbleSort(array, swaps_comparisons);
+        time = System.currentTimeMillis() - time;
+        compareStatsLong[2] = (int) time;
+
+        for (int i = 0; i < 3; i++) {
+            compareStatsInt[i] = (int) compareStatsLong[i];
+        }
+        viz.updateData(compareStatsInt);
+    }
+
+    private void quickSortCompareRuntime() {
+        array = randomArray.clone();
+        time = System.currentTimeMillis();
+        Sorting.quickSort(array, 0, array.length - 1, swaps_comparisons);
+        time = System.currentTimeMillis() - time;
+        compareStatsLong[0] = (int) time;
+
+        array = inverselySortedArray.clone();
+        time = System.currentTimeMillis();
+        Sorting.quickSort(array, 0, array.length - 1, swaps_comparisons);
+        time = System.currentTimeMillis() - time;
+        compareStatsLong[1] = (int) time;
+
+        array = sortedArray.clone();
+        time = System.currentTimeMillis();
+        Sorting.quickSort(array, 0, array.length - 1, swaps_comparisons);
+        time = System.currentTimeMillis() - time;
+        compareStatsLong[2] = (int) time;
+
+        for (int i = 0; i < 3; i++) {
+            compareStatsInt[i] = (int) compareStatsLong[i];
+        }
+        viz.updateData(compareStatsInt);
     }
 }

@@ -24,17 +24,24 @@ public class Visualization extends JPanel {
         int height = getHeight();
         int barWidth = (width / data.length);
         int maxData = Arrays.stream(data).max().orElse(0);
+        if (maxData == 0)
+            maxData = 1;
 
         g.drawLine(30, 10, 30, height - 10);
 
-        if (maxData < 11) {
+        if (maxData <= 10) {
             step = 1;
         } else {
-            step = maxData / 10;
+            int magnitude = 10;
+            while (maxData >= magnitude * 10) {
+                magnitude *= 10;
+            }
+            step = magnitude;
         }
+        int maxTicks = (maxData + step - 1) / step * step;
 
-        for (int i = 0; i <= maxData; i += step) {
-            int labelY = height - ((i * (height - 20)) / maxData);
+        for (int i = 0; i <= maxTicks; i += step) {
+            int labelY = height - ((i * (height - 20)) / maxTicks);
             g.drawString(String.valueOf(i), 5, labelY);
             g.drawLine(30, labelY, 35, labelY);
         }
