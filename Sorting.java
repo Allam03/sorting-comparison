@@ -52,23 +52,23 @@ public class Sorting {
     }
 
     public static void quickSort(int[] array, int lowIndex, int highIndex) {
-        if (lowIndex >= highIndex)
-            return;
-
-        int pivot = array[highIndex];
-        int leftPointer = lowIndex;
-        int rightPointer = highIndex;
-        while (leftPointer < rightPointer) {
-            while (array[leftPointer] <= pivot && leftPointer < rightPointer) {
-                leftPointer++;
-            }
-            while (array[rightPointer] >= pivot && leftPointer < rightPointer) {
-                rightPointer--;
-            }
-            swap(array, leftPointer, rightPointer);
+        if (lowIndex < highIndex) {
+            int pivotIndex = partition(array, lowIndex, highIndex);
+            quickSort(array, lowIndex, pivotIndex - 1);
+            quickSort(array, pivotIndex + 1, highIndex);
         }
-        swap(array, leftPointer, highIndex);
-        quickSort(array, lowIndex, leftPointer - 1);
-        quickSort(array, leftPointer + 1, highIndex);
     }
+    
+    private static int partition(int[] array, int lowIndex, int highIndex) {
+        int pivot = array[highIndex];
+        int i = lowIndex - 1;
+        for (int j = lowIndex; j < highIndex; j++) {
+            if (array[j] < pivot) {
+                i++;
+                swap(array, i, j);
+            }
+        }
+        swap(array, i + 1, highIndex);
+        return i + 1;
+    }    
 }
