@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 public class GUI extends JFrame implements ActionListener {
     private JButton countingSortButton, bubbleSortButton, quickSortButton, randomizeArrayButton;
     private JLabel resultLabel;
+    private JCheckBox visualizeCheckBox;
     private Visualization viz;
     private int[] randomArray;
     private int[] array;
@@ -86,16 +87,19 @@ public class GUI extends JFrame implements ActionListener {
         bubbleSortButton = new JButton("Bubble Sort");
         quickSortButton = new JButton("Quick Sort");
         randomizeArrayButton = new JButton("Randomize Array");
+        visualizeCheckBox = new JCheckBox("Visualize");
 
         buttonPanel.add(countingSortButton);
         buttonPanel.add(bubbleSortButton);
         buttonPanel.add(quickSortButton);
         buttonPanel.add(randomizeArrayButton);
+        buttonPanel.add(visualizeCheckBox);
 
         countingSortButton.addActionListener(this);
         bubbleSortButton.addActionListener(this);
         quickSortButton.addActionListener(this);
         randomizeArrayButton.addActionListener(this);
+        visualizeCheckBox.setSelected(true);
 
         return buttonPanel;
     }
@@ -122,6 +126,7 @@ public class GUI extends JFrame implements ActionListener {
         randomizeArrayButton.setEnabled(false);
         arrayLengthField.setEnabled(false);
         delayField.setEnabled(false);
+        visualizeCheckBox.setEnabled(false);
     }
 
     public void enableInput() {
@@ -131,6 +136,7 @@ public class GUI extends JFrame implements ActionListener {
         randomizeArrayButton.setEnabled(true);
         arrayLengthField.setEnabled(true);
         delayField.setEnabled(true);
+        visualizeCheckBox.setEnabled(true);
     }
 
     public void randomizeArray() {
@@ -167,15 +173,22 @@ public class GUI extends JFrame implements ActionListener {
     public void performCountingSort() {
         disableInput();
         array = randomArray.clone();
+        stats[0] = 0;
+        stats[1] = 0;
         time = System.nanoTime();
         Sorting.countingSort(array);
         time = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - time);
+        resultLabel.setText(time + "ms, " +
+                stats[0] + " Swaps, " +
+                stats[1] + " Comparisons.");
+        if (!visualizeCheckBox.isSelected()){
+            enableInput();
+            return;
+        }
         SwingWorker<Void, Void> worker = new SwingWorker<>() {
             @Override
             protected Void doInBackground() {
                 array = randomArray.clone();
-                stats[0] = 0;
-                stats[1] = 0;
                 SortingStats.countingSort(array, viz, delay);
                 return null;
             }
@@ -183,9 +196,6 @@ public class GUI extends JFrame implements ActionListener {
             @Override
             protected void done() {
                 enableInput();
-                resultLabel.setText(time + "ms, " +
-                        stats[0] + " Swaps, " +
-                        stats[1] + " Comparisons.");
             }
         };
         worker.execute();
@@ -195,25 +205,30 @@ public class GUI extends JFrame implements ActionListener {
     private void performBubbleSort() {
         disableInput();
         array = randomArray.clone();
+        stats[0] = 0;
+        stats[1] = 0;
         time = System.nanoTime();
-        Sorting.bubbleSort(array);
+        Sorting.bubbleSort(array, stats);
         time = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - time);
+        resultLabel.setText(time + "ms, " +
+                stats[0] + " Swaps, " +
+                stats[1] + " Comparisons.");
+        if (!visualizeCheckBox.isSelected()){
+            enableInput();
+            return;
+        }
         SwingWorker<Void, Void> worker = new SwingWorker<>() {
             @Override
             protected Void doInBackground() {
                 array = randomArray.clone();
-                stats[0] = 0;
-                stats[1] = 0;
-                SortingStats.bubbleSort(array, stats, viz, delay);
+                SortingStats.bubbleSort(array, viz, delay);
                 return null;
             }
 
             @Override
             protected void done() {
                 enableInput();
-                resultLabel.setText(time + "ms, " +
-                        stats[0] + " Swaps, " +
-                        stats[1] + " Comparisons.");
+
             }
         };
         worker.execute();
@@ -222,25 +237,30 @@ public class GUI extends JFrame implements ActionListener {
     private void performQuickSort() {
         disableInput();
         array = randomArray.clone();
+        stats[0] = 0;
+        stats[1] = 0;
         time = System.nanoTime();
-        Sorting.quickSort(array, 0, array.length - 1);
+        Sorting.quickSort(array, 0, array.length - 1, stats);
         time = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - time);
+        resultLabel.setText(time + "ms, " +
+                stats[0] + " Swaps, " +
+                stats[1] + " Comparisons.");
+        if (!visualizeCheckBox.isSelected()){
+            enableInput();
+            return;
+        }
         SwingWorker<Void, Void> worker = new SwingWorker<>() {
             @Override
             protected Void doInBackground() {
                 array = randomArray.clone();
-                stats[0] = 0;
-                stats[1] = 0;
-                SortingStats.quickSort(array, 0, array.length - 1, stats, viz, delay);
+                SortingStats.quickSort(array, 0, array.length - 1, viz, delay);
                 return null;
             }
 
             @Override
             protected void done() {
                 enableInput();
-                resultLabel.setText(time + "ms, " +
-                        stats[0] + " Swaps, " +
-                        stats[1] + " Comparisons.");
+
             }
         };
         worker.execute();

@@ -39,14 +39,14 @@ public class SortingStats {
         System.arraycopy(sortedArray, 0, array, 0, array.length);
     }
 
-    public static void bubbleSort(int array[], int[] stats, Visualization viz, int delay) {
+    public static void bubbleSort(int array[], Visualization viz, int delay) {
+        int swaps = 0;
         int prevSwaps = 0;
+
         for (int i = 0; i < array.length - 1; i++) {
             for (int j = 0; j < array.length - i - 1; j++) {
-                stats[1]++; // Increment comparisons
                 if (array[j] > array[j + 1]) {
                     swap(array, j, j + 1);
-                    stats[0]++; // Increment swaps
                     viz.updateData(array);
                     try {
                         Thread.sleep(delay);
@@ -55,30 +55,28 @@ public class SortingStats {
                     }
                 }
             }
-            if (prevSwaps == stats[0])
+            if (prevSwaps == swaps)
                 break;
-            prevSwaps = stats[0];
+            prevSwaps = swaps;
         }
     }
 
-    public static void quickSort(int[] array, int lowIndex, int highIndex, int[] stats, Visualization viz, int delay) {
+    public static void quickSort(int[] array, int lowIndex, int highIndex, Visualization viz, int delay) {
         if (lowIndex < highIndex) {
-            int pivotIndex = partition(array, lowIndex, highIndex, stats, viz, delay);
-            quickSort(array, lowIndex, pivotIndex - 1, stats, viz, delay);
-            quickSort(array, pivotIndex + 1, highIndex, stats, viz, delay);
+            int pivotIndex = partition(array, lowIndex, highIndex, viz, delay);
+            quickSort(array, lowIndex, pivotIndex - 1, viz, delay);
+            quickSort(array, pivotIndex + 1, highIndex, viz, delay);
         }
     }
 
-    private static int partition(int[] array, int lowIndex, int highIndex, int[] stats, Visualization viz, int delay) {
+    private static int partition(int[] array, int lowIndex, int highIndex, Visualization viz, int delay) {
         int pivot = array[highIndex];
         int i = lowIndex - 1;
 
         for (int j = lowIndex; j < highIndex; j++) {
-            stats[1]++; // Increment comparisons
             if (array[j] < pivot) {
                 i++;
                 swap(array, i, j);
-                stats[0]++; // Increment swaps
                 viz.updateData(array);
                 try {
                     Thread.sleep(delay);
@@ -88,7 +86,6 @@ public class SortingStats {
             }
         }
         swap(array, i + 1, highIndex);
-        stats[0]++; // Increment swaps
         viz.updateData(array);
         try {
             Thread.sleep(delay);

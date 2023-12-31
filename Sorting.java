@@ -33,42 +33,45 @@ public class Sorting {
         System.arraycopy(sortedArray, 0, array, 0, array.length);
     }
 
-    public static void bubbleSort(int array[]) {
-        int swaps = 0;
+    public static void bubbleSort(int array[], int[] stats) {
         int prevSwaps = 0;
 
         for (int i = 0; i < array.length - 1; i++) {
             for (int j = 0; j < array.length - i - 1; j++) {
+                stats[1]++; // Increment comparisons
                 if (array[j] > array[j + 1]) {
                     swap(array, j, j + 1);
-                    swaps++;
+                    stats[0]++; // Increment swaps
                 }
             }
-            if (prevSwaps == swaps)
+            if (prevSwaps == stats[0])
                 break;
-            prevSwaps = swaps;
+            prevSwaps = stats[0];
         }
 
     }
 
-    public static void quickSort(int[] array, int lowIndex, int highIndex) {
+    public static void quickSort(int[] array, int lowIndex, int highIndex, int[] stats) {
         if (lowIndex < highIndex) {
-            int pivotIndex = partition(array, lowIndex, highIndex);
-            quickSort(array, lowIndex, pivotIndex - 1);
-            quickSort(array, pivotIndex + 1, highIndex);
+            int pivotIndex = partition(array, lowIndex, highIndex, stats);
+            quickSort(array, lowIndex, pivotIndex - 1, stats);
+            quickSort(array, pivotIndex + 1, highIndex, stats);
         }
     }
     
-    private static int partition(int[] array, int lowIndex, int highIndex) {
+    private static int partition(int[] array, int lowIndex, int highIndex, int[] stats) {
+        stats[1]++; // Increment comparisons
         int pivot = array[highIndex];
         int i = lowIndex - 1;
         for (int j = lowIndex; j < highIndex; j++) {
             if (array[j] < pivot) {
                 i++;
                 swap(array, i, j);
+                stats[0]++; // Increment swaps
             }
         }
         swap(array, i + 1, highIndex);
+        stats[0]++; // Increment swaps
         return i + 1;
     }    
 }
