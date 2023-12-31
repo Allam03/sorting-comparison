@@ -9,17 +9,18 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class GUI extends JFrame implements ActionListener {
-    private JButton countingSortButton, bubbleSortButton, quickSortButton, randomizeArrayButton;
+    private JButton countingSortButton, bubbleSortButton, quickSortButton, randomizeArrayButton, abortButton;
     private JLabel resultLabel;
     private JCheckBox visualizeCheckBox;
+    private JTextField arrayLengthField, delayField;
     private Visualization viz;
+    private SwingWorker<Void, Void> currentWorker;
+    private Map<Object, Runnable> actionMap;
     private int[] randomArray;
     private int[] array;
     private long time;
     private int[] stats;
-    private JTextField arrayLengthField, delayField;
     private int length, delay;
-    private Map<Object, Runnable> actionMap;
 
     public GUI() {
         setTitle("Sorting Algorithms");
@@ -43,6 +44,7 @@ public class GUI extends JFrame implements ActionListener {
         actionMap.put(bubbleSortButton, () -> performBubbleSort());
         actionMap.put(quickSortButton, () -> performQuickSort());
         actionMap.put(randomizeArrayButton, () -> randomizeArray());
+        actionMap.put(abortButton, () -> performAbort());
     }
 
     private JPanel createInputPanel() {
@@ -88,18 +90,21 @@ public class GUI extends JFrame implements ActionListener {
         quickSortButton = new JButton("Quick Sort");
         randomizeArrayButton = new JButton("Randomize Array");
         visualizeCheckBox = new JCheckBox("Visualize");
+        abortButton = new JButton("Abort");
 
         buttonPanel.add(countingSortButton);
         buttonPanel.add(bubbleSortButton);
         buttonPanel.add(quickSortButton);
         buttonPanel.add(randomizeArrayButton);
         buttonPanel.add(visualizeCheckBox);
+        buttonPanel.add(abortButton);
 
         countingSortButton.addActionListener(this);
         bubbleSortButton.addActionListener(this);
         quickSortButton.addActionListener(this);
         randomizeArrayButton.addActionListener(this);
         visualizeCheckBox.setSelected(true);
+        abortButton.addActionListener(this);
 
         return buttonPanel;
     }
@@ -181,15 +186,18 @@ public class GUI extends JFrame implements ActionListener {
         resultLabel.setText(time + "ms, " +
                 stats[0] + " Swaps, " +
                 stats[1] + " Comparisons.");
-        if (!visualizeCheckBox.isSelected()){
+        if (!visualizeCheckBox.isSelected()) {
             enableInput();
             return;
         }
-        SwingWorker<Void, Void> worker = new SwingWorker<>() {
+        currentWorker = new SwingWorker<>() {
             @Override
             protected Void doInBackground() {
                 array = randomArray.clone();
-                SortingStats.countingSort(array, viz, delay);
+                try {
+                    SortingStats.countingSort(array, viz, delay);
+                } catch (InterruptedException e) {
+                }
                 return null;
             }
 
@@ -198,7 +206,7 @@ public class GUI extends JFrame implements ActionListener {
                 enableInput();
             }
         };
-        worker.execute();
+        currentWorker.execute();
 
     }
 
@@ -213,15 +221,18 @@ public class GUI extends JFrame implements ActionListener {
         resultLabel.setText(time + "ms, " +
                 stats[0] + " Swaps, " +
                 stats[1] + " Comparisons.");
-        if (!visualizeCheckBox.isSelected()){
+        if (!visualizeCheckBox.isSelected()) {
             enableInput();
             return;
         }
-        SwingWorker<Void, Void> worker = new SwingWorker<>() {
+        currentWorker = new SwingWorker<>() {
             @Override
             protected Void doInBackground() {
                 array = randomArray.clone();
-                SortingStats.bubbleSort(array, viz, delay);
+                try {
+                    SortingStats.bubbleSort(array, viz, delay);
+                } catch (InterruptedException e) {
+                }
                 return null;
             }
 
@@ -231,7 +242,7 @@ public class GUI extends JFrame implements ActionListener {
 
             }
         };
-        worker.execute();
+        currentWorker.execute();
     }
 
     private void performQuickSort() {
@@ -245,15 +256,18 @@ public class GUI extends JFrame implements ActionListener {
         resultLabel.setText(time + "ms, " +
                 stats[0] + " Swaps, " +
                 stats[1] + " Comparisons.");
-        if (!visualizeCheckBox.isSelected()){
+        if (!visualizeCheckBox.isSelected()) {
             enableInput();
             return;
         }
-        SwingWorker<Void, Void> worker = new SwingWorker<>() {
+        currentWorker = new SwingWorker<>() {
             @Override
             protected Void doInBackground() {
                 array = randomArray.clone();
-                SortingStats.quickSort(array, 0, array.length - 1, viz, delay);
+                try {
+                    SortingStats.quickSort(array, 0, array.length - 1, viz, delay);
+                } catch (InterruptedException e) {
+                }
                 return null;
             }
 
@@ -263,6 +277,14 @@ public class GUI extends JFrame implements ActionListener {
 
             }
         };
-        worker.execute();
+        currentWorker.execute();
+    }
+
+    private void performAbort() {
+        if (currentWorker != null && !currentWorker.isDone()) {
+            currentWorker.cancel(true);
+            currentWorker = null;
+            enableInput();
+        }
     }
 }

@@ -1,13 +1,13 @@
 import java.util.Arrays;
 
 public class SortingStats {
-    public static void swap(int[] array, int i, int j) {
+    public static void swap(int[] array, int i, int j) throws InterruptedException {
         int temp = array[i];
         array[i] = array[j];
         array[j] = temp;
     }
 
-    public static void countingSort(int[] array, Visualization viz, int delay) {
+    public static void countingSort(int[] array, Visualization viz, int delay) throws InterruptedException {
         int max = Arrays.stream(array).max().orElse(0);
         int min = Arrays.stream(array).min().orElse(0);
 
@@ -29,17 +29,13 @@ public class SortingStats {
             index = array[i] - min;
             sortedArray[count[index] - 1] = array[i];
             viz.updateData(sortedArray);
-            try {
-                Thread.sleep(delay);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            Thread.sleep(delay);
             count[index]--;
         }
         System.arraycopy(sortedArray, 0, array, 0, array.length);
     }
 
-    public static void bubbleSort(int array[], Visualization viz, int delay) {
+    public static void bubbleSort(int array[], Visualization viz, int delay) throws InterruptedException {
         int swaps = 0;
         int prevSwaps = 0;
 
@@ -47,12 +43,9 @@ public class SortingStats {
             for (int j = 0; j < array.length - i - 1; j++) {
                 if (array[j] > array[j + 1]) {
                     swap(array, j, j + 1);
+                    swaps++;
                     viz.updateData(array);
-                    try {
-                        Thread.sleep(delay);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                    Thread.sleep(delay);
                 }
             }
             if (prevSwaps == swaps)
@@ -61,7 +54,8 @@ public class SortingStats {
         }
     }
 
-    public static void quickSort(int[] array, int lowIndex, int highIndex, Visualization viz, int delay) {
+    public static void quickSort(int[] array, int lowIndex, int highIndex, Visualization viz, int delay)
+            throws InterruptedException {
         if (lowIndex < highIndex) {
             int pivotIndex = partition(array, lowIndex, highIndex, viz, delay);
             quickSort(array, lowIndex, pivotIndex - 1, viz, delay);
@@ -69,7 +63,8 @@ public class SortingStats {
         }
     }
 
-    private static int partition(int[] array, int lowIndex, int highIndex, Visualization viz, int delay) {
+    private static int partition(int[] array, int lowIndex, int highIndex, Visualization viz, int delay)
+            throws InterruptedException {
         int pivot = array[highIndex];
         int i = lowIndex - 1;
 
@@ -78,20 +73,12 @@ public class SortingStats {
                 i++;
                 swap(array, i, j);
                 viz.updateData(array);
-                try {
-                    Thread.sleep(delay);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                Thread.sleep(delay);
             }
         }
         swap(array, i + 1, highIndex);
         viz.updateData(array);
-        try {
-            Thread.sleep(delay);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        Thread.sleep(delay);
         return i + 1;
     }
 }
