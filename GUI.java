@@ -71,8 +71,10 @@ public class GUI extends JFrame implements ActionListener {
 
     private JPanel createTopPanel() {
         JPanel panel = new JPanel(new BorderLayout());
+        JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         resultLabel = new JLabel();
-        panel.add(resultLabel, BorderLayout.SOUTH);
+        labelPanel.add(resultLabel);
+        panel.add(labelPanel, BorderLayout.SOUTH);
         panel.add(createInputPanel(), BorderLayout.CENTER);
         panel.add(createButtonPanel(), BorderLayout.NORTH);
         return panel;
