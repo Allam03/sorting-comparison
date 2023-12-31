@@ -2,6 +2,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class GUI extends JFrame implements ActionListener {
@@ -14,6 +18,7 @@ public class GUI extends JFrame implements ActionListener {
     private int[] stats;
     private JTextField arrayLengthField, delayField;
     private int length, delay;
+    private Map<Object, Runnable> actionMap;
 
     public GUI() {
         setTitle("Sorting Algorithms");
@@ -25,19 +30,38 @@ public class GUI extends JFrame implements ActionListener {
         add(splitPane);
         setVisible(true);
 
-        stats = new int[] { 0, 0 };
+        stats = new int[] { 0, 0 }; // swaps, comparisons
         length = 10;
         delay = 5;
         randomArray = ArrayGenerator.generateRandom(length);
+
+        actionMap = new HashMap<>();
+        actionMap.put(arrayLengthField, () -> updateArrayLength());
+        actionMap.put(delayField, () -> updateDelay());
+        actionMap.put(countingSortButton, () -> performCountingSort());
+        actionMap.put(bubbleSortButton, () -> performBubbleSort());
+        actionMap.put(quickSortButton, () -> performQuickSort());
+        actionMap.put(randomizeArrayButton, () -> randomizeArray());
     }
 
     private JPanel createInputPanel() {
         JPanel inputPanel = new JPanel();
 
-        arrayLengthField = new JTextField(10);
-        delayField = new JTextField(10);
-        delayField.addActionListener(this);
-        arrayLengthField.addActionListener(this);
+        arrayLengthField = new JTextField("10", 5);
+        arrayLengthField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                updateArrayLength();
+            }
+        });
+
+        delayField = new JTextField("5", 5);
+        delayField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                updateDelay();
+            }
+        });
         inputPanel.add(new JLabel("Array Length: "));
         inputPanel.add(arrayLengthField);
         inputPanel.add(new JLabel("Delay in ms: "));
@@ -83,102 +107,116 @@ public class GUI extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == randomizeArrayButton) {
-            randomArray = ArrayGenerator.generateRandom(length);
-        } else if (e.getSource() == arrayLengthField) {
-            try {
-                int newLength = Integer.parseInt(arrayLengthField.getText());
-                if (newLength > 0) {
-                    length = newLength;
-                    randomArray = ArrayGenerator.generateRandom(length);
-                } else {
-                    JOptionPane.showMessageDialog(this, "Length must be a positive integer.");
-                }
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Invalid input for length.");
-            }
-        } else if (e.getSource() == delayField) {
-            try {
-                int newDelay = Integer.parseInt(delayField.getText());
-                if (newDelay > 0) {
-                    delay = newDelay;
-                } else {
-                    JOptionPane.showMessageDialog(this, "Delay must be a positive integer.");
-                }
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Invalid input for delay.");
-            }
-        } else if (e.getSource() == countingSortButton) {
-            array = randomArray.clone();
-            time = System.nanoTime();
-            Sorting.countingSort(array);
-            time = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - time);
-            SwingWorker<Void, Void> worker = new SwingWorker<>() {
-                @Override
-                protected Void doInBackground() {
-                    array = randomArray.clone();
-                    stats[0] = 0;
-                    stats[1] = 0;
-                    SortingStats.countingSort(array, viz, delay);
-                    return null;
-                }
-
-                @Override
-                protected void done() {
-                    resultLabel.setText(time + "ms, " +
-                            stats[0] + " Swaps, " +
-                            stats[1] + " Comparisons.");
-                }
-            };
-            worker.execute();
-
-        } else if (e.getSource() == bubbleSortButton) {
-
-            array = randomArray.clone();
-            time = System.nanoTime();
-            Sorting.bubbleSort(array);
-            time = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - time);
-            SwingWorker<Void, Void> worker = new SwingWorker<>() {
-                @Override
-                protected Void doInBackground() {
-                    array = randomArray.clone();
-                    stats[0] = 0;
-                    stats[1] = 0;
-                    SortingStats.bubbleSort(array, stats, viz, delay);
-                    return null;
-                }
-
-                @Override
-                protected void done() {
-                    resultLabel.setText(time + "ms, " +
-                            stats[0] + " Swaps, " +
-                            stats[1] + " Comparisons.");
-                }
-            };
-            worker.execute();
-        } else if (e.getSource() == quickSortButton) {
-            array = randomArray.clone();
-            time = System.nanoTime();
-            Sorting.quickSort(array, 0, array.length - 1);
-            time = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - time);
-            SwingWorker<Void, Void> worker = new SwingWorker<>() {
-                @Override
-                protected Void doInBackground() {
-                    array = randomArray.clone();
-                    stats[0] = 0;
-                    stats[1] = 0;
-                    SortingStats.quickSort(array, 0, array.length - 1, stats, viz, delay);
-                    return null;
-                }
-
-                @Override
-                protected void done() {
-                    resultLabel.setText(time + "ms, " +
-                            stats[0] + " Swaps, " +
-                            stats[1] + " Comparisons.");
-                }
-            };
-            worker.execute();
+        Runnable action = actionMap.get(e.getSource());
+        if (action != null) {
+            action.run();
         }
+    }
+
+    public void randomizeArray() {
+        randomArray = ArrayGenerator.generateRandom(length);
+    }
+
+    public void updateArrayLength() {
+        try {
+            int newLength = Integer.parseInt(arrayLengthField.getText());
+            if (newLength > 0) {
+                length = newLength;
+                randomArray = ArrayGenerator.generateRandom(length);
+            } else {
+                JOptionPane.showMessageDialog(this, "Length must be a positive integer.");
+            }
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Invalid input for length.");
+        }
+    }
+
+    public void updateDelay() {
+        try {
+            int newDelay = Integer.parseInt(delayField.getText());
+            if (newDelay > 0) {
+                delay = newDelay;
+            } else {
+                JOptionPane.showMessageDialog(this, "Delay must be a positive integer.");
+            }
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Invalid input for delay.");
+        }
+    }
+
+    public void performCountingSort() {
+        array = randomArray.clone();
+        time = System.nanoTime();
+        Sorting.countingSort(array);
+        time = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - time);
+        SwingWorker<Void, Void> worker = new SwingWorker<>() {
+            @Override
+            protected Void doInBackground() {
+                array = randomArray.clone();
+                stats[0] = 0;
+                stats[1] = 0;
+                SortingStats.countingSort(array, viz, delay);
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                resultLabel.setText(time + "ms, " +
+                        stats[0] + " Swaps, " +
+                        stats[1] + " Comparisons.");
+            }
+        };
+        worker.execute();
+
+    }
+
+    private void performQuickSort() {
+        array = randomArray.clone();
+        time = System.nanoTime();
+        Sorting.bubbleSort(array);
+        time = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - time);
+        SwingWorker<Void, Void> worker = new SwingWorker<>() {
+            @Override
+            protected Void doInBackground() {
+                array = randomArray.clone();
+                stats[0] = 0;
+                stats[1] = 0;
+                SortingStats.bubbleSort(array, stats, viz, delay);
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                resultLabel.setText(time + "ms, " +
+                        stats[0] + " Swaps, " +
+                        stats[1] + " Comparisons.");
+            }
+        };
+        worker.execute();
+    }
+
+    private void performBubbleSort() {
+        array = randomArray.clone();
+        time = System.nanoTime();
+        Sorting.quickSort(array, 0, array.length - 1);
+        time = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - time);
+        SwingWorker<Void, Void> worker = new SwingWorker<>() {
+            @Override
+            protected Void doInBackground() {
+                array = randomArray.clone();
+                stats[0] = 0;
+                stats[1] = 0;
+                SortingStats.quickSort(array, 0, array.length - 1, stats, viz, delay);
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                resultLabel.setText(time + "ms, " +
+                        stats[0] + " Swaps, " +
+                        stats[1] + " Comparisons.");
+            }
+        };
+        worker.execute();
     }
 }
