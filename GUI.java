@@ -12,7 +12,7 @@ public class GUI extends JFrame implements ActionListener {
     private JButton sortButton, randomizeArrayButton, abortButton, compareButton;
     private JLabel resultLabel;
     private JCheckBox visualizeCheckBox;
-    private JComboBox<String> methodMenu;
+    private JComboBox<String> methodMenu, statMenu;
     private JTextField arrayLengthField, delayField;
     private Visualization viz;
     private SwingWorker<Void, Void> currentWorker;
@@ -21,6 +21,7 @@ public class GUI extends JFrame implements ActionListener {
     private long time;
     private long[] swaps_comparisons, compareStatsLong;
     private int length, delay;
+    String method, stat;
 
     public GUI() {
         setTitle("Sorting Algorithms");
@@ -90,15 +91,18 @@ public class GUI extends JFrame implements ActionListener {
         randomizeArrayButton = new JButton("Randomize Array");
         visualizeCheckBox = new JCheckBox("Visualize");
         abortButton = new JButton("Abort");
-        compareButton = new JButton("Compare Methods");
-        String[] str = { "Counting", "Bubble", "Quick" };
-        methodMenu = new JComboBox<>(str);
+        compareButton = new JButton("Compare");
+        String[] methodOptions = { "Counting", "Bubble", "Quick" };
+        methodMenu = new JComboBox<>(methodOptions);
+        String[] statOptions = { "Runtime", "Swaps", "Comparisons" };
+        statMenu = new JComboBox<>(statOptions);
 
-        buttonPanel.add(methodMenu);
         buttonPanel.add(sortButton);
+        buttonPanel.add(methodMenu);
         buttonPanel.add(abortButton);
         buttonPanel.add(randomizeArrayButton);
         buttonPanel.add(compareButton);
+        buttonPanel.add(statMenu);
         buttonPanel.add(visualizeCheckBox);
 
         sortButton.addActionListener(this);
@@ -133,6 +137,7 @@ public class GUI extends JFrame implements ActionListener {
         visualizeCheckBox.setEnabled(false);
         compareButton.setEnabled(false);
         methodMenu.setEnabled(false);
+        statMenu.setEnabled(false);
     }
 
     public void enableInput() {
@@ -143,6 +148,7 @@ public class GUI extends JFrame implements ActionListener {
         visualizeCheckBox.setEnabled(true);
         compareButton.setEnabled(true);
         methodMenu.setEnabled(true);
+        statMenu.setEnabled(true);
     }
 
     public void randomizeArray() {
@@ -177,17 +183,17 @@ public class GUI extends JFrame implements ActionListener {
     }
 
     public void performSort() {
-        String item = (String) methodMenu.getSelectedItem();
+        method = (String) methodMenu.getSelectedItem();
         disableInput();
-        if (item.equals("Counting")) {
+        if (method.equals("Counting")) {
             performCountingSort();
             return;
         }
-        if (item.equals("Bubble")) {
+        if (method.equals("Bubble")) {
             performBubbleSort();
             return;
         }
-        if (item.equals("Quick")) {
+        if (method.equals("Quick")) {
             performQuickSort();
             return;
         }
@@ -309,6 +315,43 @@ public class GUI extends JFrame implements ActionListener {
         Arrays.sort(sortedArray);
         inverselySortedArray = sortedArray.clone();
         Sorting.reverse(inverselySortedArray);
+        method = (String) methodMenu.getSelectedItem();
+        stat = (String) statMenu.getSelectedItem();
+        switch (method) {
+            case "Counting":
+                if (stat.equals("Runtime")) {
+                    countingSortCompareRuntime();
+                    printRuntime();
+                }
+                viz.updateData(compareStatsInt);
+                break;
+
+            case "Bubble":
+                if (stat.equals("Runtime")) {
+                    bubbleSortCompareRuntime();
+                    printRuntime();
+                }
+                viz.updateData(compareStatsInt);
+                break;
+
+            case "Quick":
+                if (stat.equals("Runtime")) {
+                    quickSortCompareRuntime();
+                    printRuntime();
+                }
+                viz.updateData(compareStatsInt);
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    private void printRuntime() {
+        resultLabel.setText("At length " + length + ", " + method + " sort: " +
+                "Random " + compareStatsInt[0] + "ms, " +
+                "Inversely sorted " + compareStatsInt[1] + "ms, " +
+                "Sorted " + compareStatsInt[2] + "ms");
     }
 
     private void countingSortCompareRuntime() {
