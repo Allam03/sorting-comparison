@@ -1,14 +1,17 @@
 import java.util.Arrays;
 
 public class ComparisonStats {
-    private int[] randomArray, sortedArray, inverselySortedArray, array;
+    private int[] randomArray, sortedArray, inverselySortedArray;
     private int[] compareStatsInt;
     private long[] compareStatsLong, swaps_comparisons;
     private long time;
+    private int length;
+    private boolean isSwap;
 
     public ComparisonStats(int[] randomArray, long[] swaps_comparisons) {
+        length = randomArray.length;
         this.swaps_comparisons = swaps_comparisons;
-        this.randomArray = randomArray;
+        this.randomArray = randomArray.clone();
         sortedArray = randomArray.clone();
         Arrays.sort(sortedArray);
         inverselySortedArray = sortedArray.clone();
@@ -18,6 +21,9 @@ public class ComparisonStats {
     }
 
     public int[] getCompareStatsInt() {
+        for (int i = 0; i < 3; i++) {
+            compareStatsInt[i] = (int) compareStatsLong[i];
+        }
         return compareStatsInt;
     }
 
@@ -38,74 +44,133 @@ public class ComparisonStats {
     }
 
     private void countingSortCompareRuntime() {
-        array = randomArray.clone();
         time = System.currentTimeMillis();
-        Sorting.countingSort(array);
+        Sorting.countingSort(randomArray);
         time = System.currentTimeMillis() - time;
         compareStatsLong[0] = (int) time;
 
-        array = inverselySortedArray.clone();
         time = System.currentTimeMillis();
-        Sorting.countingSort(array);
+        Sorting.countingSort(inverselySortedArray);
         time = System.currentTimeMillis() - time;
         compareStatsLong[1] = (int) time;
 
-        array = sortedArray.clone();
         time = System.currentTimeMillis();
-        Sorting.countingSort(array);
+        Sorting.countingSort(sortedArray);
         time = System.currentTimeMillis() - time;
         compareStatsLong[2] = (int) time;
-
-        for (int i = 0; i < 3; i++) {
-            compareStatsInt[i] = (int) compareStatsLong[i];
-        }
     }
 
     private void bubbleSortCompareRuntime() {
-        array = randomArray.clone();
         time = System.currentTimeMillis();
-        Sorting.bubbleSort(array, swaps_comparisons);
+        Sorting.bubbleSort(randomArray, swaps_comparisons);
         time = System.currentTimeMillis() - time;
         compareStatsLong[0] = (int) time;
 
-        array = inverselySortedArray.clone();
         time = System.currentTimeMillis();
-        Sorting.bubbleSort(array, swaps_comparisons);
+        Sorting.bubbleSort(inverselySortedArray, swaps_comparisons);
         time = System.currentTimeMillis() - time;
         compareStatsLong[1] = (int) time;
 
-        array = sortedArray.clone();
         time = System.currentTimeMillis();
-        Sorting.bubbleSort(array, swaps_comparisons);
+        Sorting.bubbleSort(sortedArray, swaps_comparisons);
         time = System.currentTimeMillis() - time;
         compareStatsLong[2] = (int) time;
-
-        for (int i = 0; i < 3; i++) {
-            compareStatsInt[i] = (int) compareStatsLong[i];
-        }
     }
 
     private void quickSortCompareRuntime() {
-        array = randomArray.clone();
         time = System.currentTimeMillis();
-        Sorting.quickSort(array, 0, array.length - 1, swaps_comparisons);
+        Sorting.quickSort(randomArray, 0, length - 1, swaps_comparisons);
         time = System.currentTimeMillis() - time;
         compareStatsLong[0] = (int) time;
 
-        array = inverselySortedArray.clone();
         time = System.currentTimeMillis();
-        Sorting.quickSort(array, 0, array.length - 1, swaps_comparisons);
+        Sorting.quickSort(inverselySortedArray, 0, length - 1, swaps_comparisons);
         time = System.currentTimeMillis() - time;
         compareStatsLong[1] = (int) time;
 
-        array = sortedArray.clone();
         time = System.currentTimeMillis();
-        Sorting.quickSort(array, 0, array.length - 1, swaps_comparisons);
+        Sorting.quickSort(sortedArray, 0, length - 1, swaps_comparisons);
         time = System.currentTimeMillis() - time;
         compareStatsLong[2] = (int) time;
+    }
 
-        for (int i = 0; i < 3; i++) {
-            compareStatsInt[i] = (int) compareStatsLong[i];
+    public void compareSwaps(String method) {
+        swaps_comparisons[0] = 0;
+        swaps_comparisons[1] = 0;
+        isSwap = true;
+        switch (method) {
+            case "Counting":
+                for (int i = 0; i < 3; i++)
+                    compareStatsLong[i] = 0;
+                break;
+
+            case "Bubble":
+                bubbleSortCompareSwapsComparisons();
+                break;
+
+            case "Quick":
+                quickSortCompareSwapsComparisons();
+                break;
+
+            default:
+                break;
         }
+    }
+
+    public void compareComparisons(String method) {
+        swaps_comparisons[0] = 0;
+        swaps_comparisons[1] = 0;
+        isSwap = false;
+        switch (method) {
+            case "Counting":
+                for (int i = 0; i < 3; i++)
+                    compareStatsLong[i] = 0;
+                break;
+
+            case "Bubble":
+                bubbleSortCompareSwapsComparisons();
+                break;
+
+            case "Quick":
+                quickSortCompareSwapsComparisons();
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    private void bubbleSortCompareSwapsComparisons() {
+        int index;
+        if (isSwap)
+            index = 0;
+        else
+            index = 1;
+
+        Sorting.bubbleSort(randomArray, swaps_comparisons);
+        compareStatsLong[0] = swaps_comparisons[index];
+
+        Sorting.bubbleSort(inverselySortedArray, swaps_comparisons);
+        compareStatsLong[1] = swaps_comparisons[index];
+
+        Sorting.bubbleSort(sortedArray, swaps_comparisons);
+        compareStatsLong[2] = swaps_comparisons[index];
+    }
+
+    private void quickSortCompareSwapsComparisons() {
+        int index;
+        if (isSwap)
+            index = 0;
+        else
+            index = 1;
+
+        Sorting.quickSort(randomArray, 0, length - 1, swaps_comparisons);
+        compareStatsLong[0] = swaps_comparisons[index];
+
+        Sorting.quickSort(inverselySortedArray, 0, length - 1, swaps_comparisons);
+        compareStatsLong[1] = swaps_comparisons[index];
+
+        Sorting.quickSort(sortedArray, 0, length - 1, swaps_comparisons);
+        compareStatsLong[2] = swaps_comparisons[index];
     }
 }

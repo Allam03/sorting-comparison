@@ -35,20 +35,20 @@ public class Sorting {
         System.arraycopy(sortedArray, 0, array, 0, array.length);
     }
 
-    public static void bubbleSort(int array[], long[] stats) {
+    public static void bubbleSort(int array[], long[] swaps_comparisons) {
         long prevSwaps = 0;
 
         for (int i = 0; i < array.length - 1; i++) {
             for (int j = 0; j < array.length - i - 1; j++) {
-                stats[1]++; // Increment comparisons
+                swaps_comparisons[1]++;
                 if (array[j] > array[j + 1]) {
                     swap(array, j, j + 1);
-                    stats[0]++; // Increment swaps
+                    swaps_comparisons[0]++;
                 }
             }
-            if (prevSwaps == stats[0])
+            if (prevSwaps == swaps_comparisons[0])
                 break;
-            prevSwaps = stats[0];
+            prevSwaps = swaps_comparisons[0];
         }
     }
 
@@ -60,8 +60,8 @@ public class Sorting {
         }
     }
     
-    private static int partition(int[] array, int lowIndex, int highIndex, long[] stats) {
-        stats[1]++; // Increment comparisons
+    private static int partition(int[] array, int lowIndex, int highIndex, long[] swaps_comparisons) {
+        swaps_comparisons[1]++;
         int pivot = array[highIndex];
         int i = lowIndex - 1;
 
@@ -69,11 +69,11 @@ public class Sorting {
             if (array[j] < pivot) {
                 i++;
                 swap(array, i, j);
-                stats[0]++; // Increment swaps
+                swaps_comparisons[0]++;
             }
         }
         swap(array, i + 1, highIndex);
-        stats[0]++; // Increment swaps
+        swaps_comparisons[0]++;
         return i + 1;
     }    
 }

@@ -216,7 +216,7 @@ public class GUI extends JFrame implements ActionListener {
             protected Void doInBackground() {
                 array = randomArray.clone();
                 try {
-                    SortingStats.countingSort(array, viz, delay);
+                    SortingViz.countingSort(array, viz, delay);
                 } catch (InterruptedException e) {
                 }
                 return null;
@@ -251,7 +251,7 @@ public class GUI extends JFrame implements ActionListener {
             protected Void doInBackground() {
                 array = randomArray.clone();
                 try {
-                    SortingStats.bubbleSort(array, viz, delay);
+                    SortingViz.bubbleSort(array, viz, delay);
                 } catch (InterruptedException e) {
                 }
                 return null;
@@ -285,7 +285,7 @@ public class GUI extends JFrame implements ActionListener {
             protected Void doInBackground() {
                 array = randomArray.clone();
                 try {
-                    SortingStats.quickSort(array, 0, array.length - 1, viz, delay);
+                    SortingViz.quickSort(array, 0, array.length - 1, viz, delay);
                 } catch (InterruptedException e) {
                 }
                 return null;
@@ -308,27 +308,32 @@ public class GUI extends JFrame implements ActionListener {
     }
 
     private void performCompare() {
-        stat = (String)statMenu.getSelectedItem();
-        method = (String)methodMenu.getSelectedItem();
+        stat = (String) statMenu.getSelectedItem();
+        method = (String) methodMenu.getSelectedItem();
         ComparisonStats compare = new ComparisonStats(randomArray, swaps_comparisons);
         switch (stat) {
             case "Runtime":
-                if (stat.equals("Runtime")) {
-                    compare.compareRuntime(method);
-                    printRuntime();
-                }
+                compare.compareRuntime(method);
+                compareStatsInt = compare.getCompareStatsInt();
+                printRuntime();
                 break;
 
             case "Swaps":
+                compare.compareSwaps(method);
+                compareStatsInt = compare.getCompareStatsInt();
+                printSwaps();
                 break;
 
             case "Comparisons":
+                compare.compareComparisons(method);
+                compareStatsInt = compare.getCompareStatsInt();
+                printComparisons();
                 break;
 
             default:
                 break;
         }
-        compareStatsInt = compare.getCompareStatsInt();
+        if(visualizeCheckBox.isSelected())
         viz.updateData(compareStatsInt);
     }
 
@@ -337,5 +342,19 @@ public class GUI extends JFrame implements ActionListener {
                 "Random " + compareStatsInt[0] + "ms, " +
                 "Inversely sorted " + compareStatsInt[1] + "ms, " +
                 "Sorted " + compareStatsInt[2] + "ms");
+    }
+
+    private void printSwaps() {
+        resultLabel.setText("At length " + length + ", " + method + " sort: " +
+                "Random " + compareStatsInt[0] + " swaps, " +
+                "Inversely sorted " + compareStatsInt[1] + " swaps, " +
+                "Sorted " + compareStatsInt[2] + " swaps");
+    }
+
+    private void printComparisons() {
+        resultLabel.setText("At length " + length + ", " + method + " sort: " +
+                "Random " + compareStatsInt[0] + " comparisons, " +
+                "Inversely sorted " + compareStatsInt[1] + " comparisons, " +
+                "Sorted " + compareStatsInt[2] + " comparisons");
     }
 }
