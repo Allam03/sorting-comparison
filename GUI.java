@@ -20,7 +20,7 @@ public class GUI extends JFrame implements ActionListener {
     private long time;
     private long[] swaps_comparisons;
     private int length, delay;
-    String method, stat;
+    String method, stat, parameter;
 
     public GUI() {
         setTitle("Sorting Algorithms");
@@ -313,48 +313,33 @@ public class GUI extends JFrame implements ActionListener {
         ComparisonStats compare = new ComparisonStats(randomArray, swaps_comparisons);
         switch (stat) {
             case "Runtime":
+                parameter = "ms";
                 compare.compareRuntime(method);
-                compareStatsInt = compare.getCompareStatsInt();
-                printRuntime();
                 break;
 
             case "Swaps":
+                parameter = "swaps";
                 compare.compareSwaps(method);
-                compareStatsInt = compare.getCompareStatsInt();
-                printSwaps();
                 break;
 
             case "Comparisons":
+                parameter = "comparisons";
                 compare.compareComparisons(method);
-                compareStatsInt = compare.getCompareStatsInt();
-                printComparisons();
                 break;
 
             default:
                 break;
         }
+        compareStatsInt = compare.getCompareStatsInt();
+        printResult();
         if(visualizeCheckBox.isSelected())
         viz.updateData(compareStatsInt);
     }
 
-    private void printRuntime() {
+    private void printResult() {
         resultLabel.setText("At length " + length + ", " + method + " sort: " +
-                "Random " + compareStatsInt[0] + "ms, " +
-                "Inversely sorted " + compareStatsInt[1] + "ms, " +
-                "Sorted " + compareStatsInt[2] + "ms");
-    }
-
-    private void printSwaps() {
-        resultLabel.setText("At length " + length + ", " + method + " sort: " +
-                "Random " + compareStatsInt[0] + " swaps, " +
-                "Inversely sorted " + compareStatsInt[1] + " swaps, " +
-                "Sorted " + compareStatsInt[2] + " swaps");
-    }
-
-    private void printComparisons() {
-        resultLabel.setText("At length " + length + ", " + method + " sort: " +
-                "Random " + compareStatsInt[0] + " comparisons, " +
-                "Inversely sorted " + compareStatsInt[1] + " comparisons, " +
-                "Sorted " + compareStatsInt[2] + " comparisons");
+                "Random " + compareStatsInt[0] + " " + parameter + ", " +
+                "Inversely sorted " + compareStatsInt[1] + " " + parameter + ", " +
+                "Sorted " + compareStatsInt[2]+ " " + parameter);
     }
 }
