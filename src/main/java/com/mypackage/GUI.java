@@ -116,7 +116,7 @@ public class GUI extends JFrame implements ActionListener {
     private JPanel createVisualizationPanel() {
         JPanel visualizationPanel = new JPanel(new BorderLayout());
         viz = new Visualization();
-        visualizationPanel.add(new JScrollPane(viz), BorderLayout.CENTER);
+        visualizationPanel.add(viz.getChartPanel(), BorderLayout.CENTER);
         return visualizationPanel;
     }
 
@@ -212,7 +212,7 @@ public class GUI extends JFrame implements ActionListener {
             enableInput();
             return;
         }
-        currentWorker = new SwingWorker<Void, Void>() {
+        currentWorker = new SwingWorker<>() {
             @Override
             protected Void doInBackground() {
                 array = randomArray.clone();
@@ -247,7 +247,7 @@ public class GUI extends JFrame implements ActionListener {
             enableInput();
             return;
         }
-        currentWorker = new SwingWorker<Void, Void>() {
+        currentWorker = new SwingWorker<>() {
             @Override
             protected Void doInBackground() {
                 array = randomArray.clone();
@@ -281,7 +281,7 @@ public class GUI extends JFrame implements ActionListener {
             enableInput();
             return;
         }
-        currentWorker = new SwingWorker<Void, Void>() {
+        currentWorker = new SwingWorker<>() {
             @Override
             protected Void doInBackground() {
                 array = randomArray.clone();
@@ -334,7 +334,7 @@ public class GUI extends JFrame implements ActionListener {
         comparisonStats = compare.getComparisonStats();
         printResult();
         if (visualizeCheckBox.isSelected())
-            viz.updateData(comparisonStats);
+            viz.updatePlot(comparisonStats);
     }
 
     private void printResult() {

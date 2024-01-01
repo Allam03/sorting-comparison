@@ -30,7 +30,7 @@ public class SortingViz {
         for (int i = array.length - 1; i >= 0; i--) {
             index = array[i] - min;
             sortedArray[count[index] - 1] = array[i];
-            viz.updateData(sortedArray);
+            viz.updatePlot(sortedArray);
             Thread.sleep(delay);
             count[index]--;
         }
@@ -46,7 +46,7 @@ public class SortingViz {
                 if (array[j] > array[j + 1]) {
                     swap(array, j, j + 1);
                     swaps++;
-                    viz.updateData(array);
+                    viz.updatePlot(array);
                     Thread.sleep(delay);
                 }
             }
@@ -74,12 +74,12 @@ public class SortingViz {
             if (array[j] < pivot) {
                 i++;
                 swap(array, i, j);
-                viz.updateData(array);
+                viz.updatePlot(array);
                 Thread.sleep(delay);
             }
         }
         swap(array, i + 1, highIndex);
-        viz.updateData(array);
+        viz.updatePlot(array);
         Thread.sleep(delay);
         return i + 1;
     }
