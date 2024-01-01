@@ -36,7 +36,7 @@ public class GUI extends JFrame implements ActionListener {
         swaps_comparisons = new int[] { 0, 0 };
         comparisonStats = new int[] { 0, 0, 0 };
         length = 10;
-        delay = 5;
+        delay = 50;
         randomArray = ArrayGenerator.generateRandom(length);
 
         actionMap = new HashMap<>();
@@ -51,14 +51,14 @@ public class GUI extends JFrame implements ActionListener {
     private JPanel createInputPanel() {
         JPanel inputPanel = new JPanel();
 
-        arrayLengthField = new JTextField("10", 5);
+        arrayLengthField = new JTextField("10", 10);
         arrayLengthField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
                 updateArrayLength();
             }
         });
-        delayField = new JTextField("5", 5);
+        delayField = new JTextField("50", 5);
         delayField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
