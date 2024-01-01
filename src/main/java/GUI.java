@@ -210,7 +210,7 @@ public class GUI extends JFrame implements ActionListener {
             enableInput();
             return;
         }
-        currentWorker = new SwingWorker<>() {
+        currentWorker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() {
                 array = randomArray.clone();
@@ -245,7 +245,7 @@ public class GUI extends JFrame implements ActionListener {
             enableInput();
             return;
         }
-        currentWorker = new SwingWorker<>() {
+        currentWorker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() {
                 array = randomArray.clone();
@@ -279,7 +279,7 @@ public class GUI extends JFrame implements ActionListener {
             enableInput();
             return;
         }
-        currentWorker = new SwingWorker<>() {
+        currentWorker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() {
                 array = randomArray.clone();
@@ -331,8 +331,7 @@ public class GUI extends JFrame implements ActionListener {
         }
         comparisonStats = compare.getComparisonStats();
         printResult();
-        if(visualizeCheckBox.isSelected())
-        viz.updateData(comparisonStats);
+        if(visualizeCheckBox.isSelected()) viz.updateData(comparisonStats);
     }
 
     private void printResult() {
