@@ -4,7 +4,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,9 +16,9 @@ public class GUI extends JFrame implements ActionListener {
     private Visualization viz;
     private SwingWorker<Void, Void> currentWorker;
     private Map<Object, Runnable> actionMap;
-    private int[] randomArray, sortedArray, inverselySortedArray, array, compareStatsInt;
+    private int[] randomArray, array, compareStatsInt;
     private long time;
-    private long[] swaps_comparisons, compareStatsLong;
+    private long[] swaps_comparisons;
     private int length, delay;
     String method, stat;
 
@@ -34,7 +33,6 @@ public class GUI extends JFrame implements ActionListener {
         setVisible(true);
 
         swaps_comparisons = new long[] { 0, 0 };
-        compareStatsLong = new long[] { 0, 0, 0 };
         compareStatsInt = new int[] { 0, 0, 0 };
         length = 10;
         delay = 5;
@@ -184,7 +182,6 @@ public class GUI extends JFrame implements ActionListener {
 
     public void performSort() {
         method = (String) methodMenu.getSelectedItem();
-        disableInput();
         if (method.equals("Counting")) {
             performCountingSort();
             return;
@@ -311,40 +308,28 @@ public class GUI extends JFrame implements ActionListener {
     }
 
     private void performCompare() {
-        sortedArray = randomArray.clone();
-        Arrays.sort(sortedArray);
-        inverselySortedArray = sortedArray.clone();
-        Sorting.reverse(inverselySortedArray);
-        method = (String) methodMenu.getSelectedItem();
-        stat = (String) statMenu.getSelectedItem();
-        switch (method) {
-            case "Counting":
+        stat = (String)statMenu.getSelectedItem();
+        method = (String)methodMenu.getSelectedItem();
+        ComparisonStats compare = new ComparisonStats(randomArray, swaps_comparisons);
+        switch (stat) {
+            case "Runtime":
                 if (stat.equals("Runtime")) {
-                    countingSortCompareRuntime();
+                    compare.compareRuntime(method);
                     printRuntime();
                 }
-                viz.updateData(compareStatsInt);
                 break;
 
-            case "Bubble":
-                if (stat.equals("Runtime")) {
-                    bubbleSortCompareRuntime();
-                    printRuntime();
-                }
-                viz.updateData(compareStatsInt);
+            case "Swaps":
                 break;
 
-            case "Quick":
-                if (stat.equals("Runtime")) {
-                    quickSortCompareRuntime();
-                    printRuntime();
-                }
-                viz.updateData(compareStatsInt);
+            case "Comparisons":
                 break;
 
             default:
                 break;
         }
+        compareStatsInt = compare.getCompareStatsInt();
+        viz.updateData(compareStatsInt);
     }
 
     private void printRuntime() {
@@ -352,80 +337,5 @@ public class GUI extends JFrame implements ActionListener {
                 "Random " + compareStatsInt[0] + "ms, " +
                 "Inversely sorted " + compareStatsInt[1] + "ms, " +
                 "Sorted " + compareStatsInt[2] + "ms");
-    }
-
-    private void countingSortCompareRuntime() {
-        array = randomArray.clone();
-        time = System.currentTimeMillis();
-        Sorting.countingSort(array);
-        time = System.currentTimeMillis() - time;
-        compareStatsLong[0] = (int) time;
-
-        array = inverselySortedArray.clone();
-        time = System.currentTimeMillis();
-        Sorting.countingSort(array);
-        time = System.currentTimeMillis() - time;
-        compareStatsLong[1] = (int) time;
-
-        array = sortedArray.clone();
-        time = System.currentTimeMillis();
-        Sorting.countingSort(array);
-        time = System.currentTimeMillis() - time;
-        compareStatsLong[2] = (int) time;
-
-        for (int i = 0; i < 3; i++) {
-            compareStatsInt[i] = (int) compareStatsLong[i];
-        }
-        viz.updateData(compareStatsInt);
-    }
-
-    private void bubbleSortCompareRuntime() {
-        array = randomArray.clone();
-        time = System.currentTimeMillis();
-        Sorting.bubbleSort(array, swaps_comparisons);
-        time = System.currentTimeMillis() - time;
-        compareStatsLong[0] = (int) time;
-
-        array = inverselySortedArray.clone();
-        time = System.currentTimeMillis();
-        Sorting.bubbleSort(array, swaps_comparisons);
-        time = System.currentTimeMillis() - time;
-        compareStatsLong[1] = (int) time;
-
-        array = sortedArray.clone();
-        time = System.currentTimeMillis();
-        Sorting.bubbleSort(array, swaps_comparisons);
-        time = System.currentTimeMillis() - time;
-        compareStatsLong[2] = (int) time;
-
-        for (int i = 0; i < 3; i++) {
-            compareStatsInt[i] = (int) compareStatsLong[i];
-        }
-        viz.updateData(compareStatsInt);
-    }
-
-    private void quickSortCompareRuntime() {
-        array = randomArray.clone();
-        time = System.currentTimeMillis();
-        Sorting.quickSort(array, 0, array.length - 1, swaps_comparisons);
-        time = System.currentTimeMillis() - time;
-        compareStatsLong[0] = (int) time;
-
-        array = inverselySortedArray.clone();
-        time = System.currentTimeMillis();
-        Sorting.quickSort(array, 0, array.length - 1, swaps_comparisons);
-        time = System.currentTimeMillis() - time;
-        compareStatsLong[1] = (int) time;
-
-        array = sortedArray.clone();
-        time = System.currentTimeMillis();
-        Sorting.quickSort(array, 0, array.length - 1, swaps_comparisons);
-        time = System.currentTimeMillis() - time;
-        compareStatsLong[2] = (int) time;
-
-        for (int i = 0; i < 3; i++) {
-            compareStatsInt[i] = (int) compareStatsLong[i];
-        }
-        viz.updateData(compareStatsInt);
     }
 }
