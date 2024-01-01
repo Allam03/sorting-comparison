@@ -28,7 +28,6 @@ public class Visualization extends JPanel {
             maxData = 1;
 
         g.drawLine(30, 10, 30, height - 10);
-
         if (maxData <= 10) {
             step = 1;
         } else {

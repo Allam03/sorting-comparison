@@ -16,9 +16,8 @@ public class GUI extends JFrame implements ActionListener {
     private Visualization viz;
     private SwingWorker<Void, Void> currentWorker;
     private Map<Object, Runnable> actionMap;
-    private int[] randomArray, array, compareStatsInt;
+    private int[] randomArray, array, comparisonStats, swaps_comparisons;
     private long time;
-    private long[] swaps_comparisons;
     private int length, delay;
     String method, stat, parameter;
 
@@ -32,8 +31,8 @@ public class GUI extends JFrame implements ActionListener {
         add(splitPane);
         setVisible(true);
 
-        swaps_comparisons = new long[] { 0, 0 };
-        compareStatsInt = new int[] { 0, 0, 0 };
+        swaps_comparisons = new int[] { 0, 0 };
+        comparisonStats = new int[] { 0, 0, 0 };
         length = 10;
         delay = 5;
         randomArray = ArrayGenerator.generateRandom(length);
@@ -330,16 +329,16 @@ public class GUI extends JFrame implements ActionListener {
             default:
                 break;
         }
-        compareStatsInt = compare.getCompareStatsInt();
+        comparisonStats = compare.getComparisonStats();
         printResult();
         if(visualizeCheckBox.isSelected())
-        viz.updateData(compareStatsInt);
+        viz.updateData(comparisonStats);
     }
 
     private void printResult() {
         resultLabel.setText("At length " + length + ", " + method + " sort: " +
-                "Random " + compareStatsInt[0] + " " + parameter + ", " +
-                "Inversely sorted " + compareStatsInt[1] + " " + parameter + ", " +
-                "Sorted " + compareStatsInt[2]+ " " + parameter);
+                "Random " + comparisonStats[0] + " " + parameter + ", " +
+                "Inversely sorted " + comparisonStats[1] + " " + parameter + ", " +
+                "Sorted " + comparisonStats[2]+ " " + parameter);
     }
 }

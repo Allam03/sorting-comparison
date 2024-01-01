@@ -35,8 +35,8 @@ public class Sorting {
         System.arraycopy(sortedArray, 0, array, 0, array.length);
     }
 
-    public static void bubbleSort(int array[], long[] swaps_comparisons) {
-        long prevSwaps = 0;
+    public static void bubbleSort(int array[], int[] swaps_comparisons) {
+        int prevSwaps = 0;
 
         for (int i = 0; i < array.length - 1; i++) {
             for (int j = 0; j < array.length - i - 1; j++) {
@@ -52,15 +52,15 @@ public class Sorting {
         }
     }
 
-    public static void quickSort(int[] array, int lowIndex, int highIndex, long[] stats) {
+    public static void quickSort(int[] array, int lowIndex, int highIndex, int[] swaps_comparisons) {
         if (lowIndex < highIndex) {
-            int pivotIndex = partition(array, lowIndex, highIndex, stats);
-            quickSort(array, lowIndex, pivotIndex - 1, stats);
-            quickSort(array, pivotIndex + 1, highIndex, stats);
+            int pivotIndex = partition(array, lowIndex, highIndex, swaps_comparisons);
+            quickSort(array, lowIndex, pivotIndex - 1, swaps_comparisons);
+            quickSort(array, pivotIndex + 1, highIndex, swaps_comparisons);
         }
     }
     
-    private static int partition(int[] array, int lowIndex, int highIndex, long[] swaps_comparisons) {
+    private static int partition(int[] array, int lowIndex, int highIndex, int[] swaps_comparisons) {
         swaps_comparisons[1]++;
         int pivot = array[highIndex];
         int i = lowIndex - 1;

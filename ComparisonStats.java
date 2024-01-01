@@ -2,13 +2,12 @@ import java.util.Arrays;
 
 public class ComparisonStats {
     private int[] randomArray, sortedArray, inverselySortedArray;
-    private int[] compareStatsInt;
-    private long[] compareStatsLong, swaps_comparisons;
+    private int[] comparisonStats, swaps_comparisons;
     private long time;
     private int length;
     private boolean isSwap;
 
-    public ComparisonStats(int[] randomArray, long[] swaps_comparisons) {
+    public ComparisonStats(int[] randomArray, int[] swaps_comparisons) {
         length = randomArray.length;
         this.swaps_comparisons = swaps_comparisons;
         this.randomArray = randomArray.clone();
@@ -16,15 +15,11 @@ public class ComparisonStats {
         Arrays.sort(sortedArray);
         inverselySortedArray = sortedArray.clone();
         Sorting.reverse(inverselySortedArray);
-        compareStatsInt = new int[3];
-        compareStatsLong = new long[3];
+        comparisonStats = new int[3];
     }
 
-    public int[] getCompareStatsInt() {
-        for (int i = 0; i < 3; i++) {
-            compareStatsInt[i] = (int) compareStatsLong[i];
-        }
-        return compareStatsInt;
+    public int[] getComparisonStats() {
+        return comparisonStats;
     }
 
     public void compareRuntime(String method) {
@@ -47,51 +42,51 @@ public class ComparisonStats {
         time = System.currentTimeMillis();
         Sorting.countingSort(randomArray);
         time = System.currentTimeMillis() - time;
-        compareStatsLong[0] = (int) time;
+        comparisonStats[0] = (int) time;
 
         time = System.currentTimeMillis();
         Sorting.countingSort(inverselySortedArray);
         time = System.currentTimeMillis() - time;
-        compareStatsLong[1] = (int) time;
+        comparisonStats[1] = (int) time;
 
         time = System.currentTimeMillis();
         Sorting.countingSort(sortedArray);
         time = System.currentTimeMillis() - time;
-        compareStatsLong[2] = (int) time;
+        comparisonStats[2] = (int) time;
     }
 
     private void bubbleSortCompareRuntime() {
         time = System.currentTimeMillis();
         Sorting.bubbleSort(randomArray, swaps_comparisons);
         time = System.currentTimeMillis() - time;
-        compareStatsLong[0] = (int) time;
+        comparisonStats[0] = (int) time;
 
         time = System.currentTimeMillis();
         Sorting.bubbleSort(inverselySortedArray, swaps_comparisons);
         time = System.currentTimeMillis() - time;
-        compareStatsLong[1] = (int) time;
+        comparisonStats[1] = (int) time;
 
         time = System.currentTimeMillis();
         Sorting.bubbleSort(sortedArray, swaps_comparisons);
         time = System.currentTimeMillis() - time;
-        compareStatsLong[2] = (int) time;
+        comparisonStats[2] = (int) time;
     }
 
     private void quickSortCompareRuntime() {
         time = System.currentTimeMillis();
         Sorting.quickSort(randomArray, 0, length - 1, swaps_comparisons);
         time = System.currentTimeMillis() - time;
-        compareStatsLong[0] = (int) time;
+        comparisonStats[0] = (int) time;
 
         time = System.currentTimeMillis();
         Sorting.quickSort(inverselySortedArray, 0, length - 1, swaps_comparisons);
         time = System.currentTimeMillis() - time;
-        compareStatsLong[1] = (int) time;
+        comparisonStats[1] = (int) time;
 
         time = System.currentTimeMillis();
         Sorting.quickSort(sortedArray, 0, length - 1, swaps_comparisons);
         time = System.currentTimeMillis() - time;
-        compareStatsLong[2] = (int) time;
+        comparisonStats[2] = (int) time;
     }
 
     public void compareSwaps(String method) {
@@ -101,7 +96,7 @@ public class ComparisonStats {
         switch (method) {
             case "Counting":
                 for (int i = 0; i < 3; i++)
-                    compareStatsLong[i] = 0;
+                    comparisonStats[i] = 0;
                 break;
 
             case "Bubble":
@@ -124,7 +119,7 @@ public class ComparisonStats {
         switch (method) {
             case "Counting":
                 for (int i = 0; i < 3; i++)
-                    compareStatsLong[i] = 0;
+                    comparisonStats[i] = 0;
                 break;
 
             case "Bubble":
@@ -148,13 +143,13 @@ public class ComparisonStats {
             index = 1;
 
         Sorting.bubbleSort(randomArray, swaps_comparisons);
-        compareStatsLong[0] = swaps_comparisons[index];
+        comparisonStats[0] = swaps_comparisons[index];
 
         Sorting.bubbleSort(inverselySortedArray, swaps_comparisons);
-        compareStatsLong[1] = swaps_comparisons[index];
+        comparisonStats[1] = swaps_comparisons[index];
 
         Sorting.bubbleSort(sortedArray, swaps_comparisons);
-        compareStatsLong[2] = swaps_comparisons[index];
+        comparisonStats[2] = swaps_comparisons[index];
     }
 
     private void quickSortCompareSwapsComparisons() {
@@ -165,12 +160,12 @@ public class ComparisonStats {
             index = 1;
 
         Sorting.quickSort(randomArray, 0, length - 1, swaps_comparisons);
-        compareStatsLong[0] = swaps_comparisons[index];
+        comparisonStats[0] = swaps_comparisons[index];
 
         Sorting.quickSort(inverselySortedArray, 0, length - 1, swaps_comparisons);
-        compareStatsLong[1] = swaps_comparisons[index];
+        comparisonStats[1] = swaps_comparisons[index];
 
         Sorting.quickSort(sortedArray, 0, length - 1, swaps_comparisons);
-        compareStatsLong[2] = swaps_comparisons[index];
+        comparisonStats[2] = swaps_comparisons[index];
     }
 }
