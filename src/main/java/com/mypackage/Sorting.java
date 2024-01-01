@@ -1,6 +1,7 @@
 package com.mypackage;
 
 import java.util.Arrays;
+import java.util.Random;
 
 public class Sorting {
     public static void swap(int[] array, int i, int j) {
@@ -63,11 +64,15 @@ public class Sorting {
     }
 
     private static int partition(int[] array, int lowIndex, int highIndex, int[] swaps_comparisons) {
-        swaps_comparisons[1]++;
+        Random rand = new Random();
+        int pivotIndex = lowIndex + rand.nextInt(highIndex - lowIndex + 1);
+        swap(array, pivotIndex, highIndex);
+        swaps_comparisons[0]++;
         int pivot = array[highIndex];
         int i = lowIndex - 1;
 
         for (int j = lowIndex; j < highIndex; j++) {
+            swaps_comparisons[1]++;
             if (array[j] < pivot) {
                 i++;
                 swap(array, i, j);
