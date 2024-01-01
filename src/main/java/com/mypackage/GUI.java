@@ -1,3 +1,5 @@
+package com.mypackage;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -331,13 +333,14 @@ public class GUI extends JFrame implements ActionListener {
         }
         comparisonStats = compare.getComparisonStats();
         printResult();
-        if(visualizeCheckBox.isSelected()) viz.updateData(comparisonStats);
+        if (visualizeCheckBox.isSelected())
+            viz.updateData(comparisonStats);
     }
 
     private void printResult() {
         resultLabel.setText("At length " + length + ", " + method + " sort: " +
                 "Random " + comparisonStats[0] + " " + parameter + ", " +
                 "Inversely sorted " + comparisonStats[1] + " " + parameter + ", " +
-                "Sorted " + comparisonStats[2]+ " " + parameter);
+                "Sorted " + comparisonStats[2] + " " + parameter);
     }
 }
