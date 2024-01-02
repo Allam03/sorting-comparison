@@ -104,6 +104,7 @@ public class GUI extends JFrame implements ActionListener {
         inputComponents.add(visualizeCheckBox);
 
         addToPanel(inputComponents, buttonPanel);
+        defocusButtons(inputComponents);
 
         sortButton.addActionListener(this);
         randomizeArrayButton.addActionListener(this);
@@ -112,6 +113,12 @@ public class GUI extends JFrame implements ActionListener {
         compareButton.addActionListener(this);
 
         return buttonPanel;
+    }
+
+    private void defocusButtons(ArrayList<Component> inputComponents) {
+        for (Component c : inputComponents) {
+            c.setFocusable(false);
+        }
     }
 
     private JPanel createVisualizationPanel() {

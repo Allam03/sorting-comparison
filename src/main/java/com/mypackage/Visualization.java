@@ -5,6 +5,9 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.renderer.category.GradientBarPainter;
+import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.data.category.DefaultCategoryDataset;
 import java.awt.*;
 
@@ -15,9 +18,10 @@ public class Visualization {
     private JFreeChart chart;
     private DefaultCategoryDataset dataset;
     private String[] labels = { "Random", "Inversely Sorted", "Sorted" };
-    CategoryPlot plot;
-    CategoryAxis domainAxis;
-    String xlab;
+    private CategoryPlot plot;
+    private CategoryAxis domainAxis;
+    private String xlab;
+    private BarRenderer renderer;
 
     public Visualization() {
         dataset = new DefaultCategoryDataset();
@@ -29,9 +33,14 @@ public class Visualization {
 
         chart.getLegend().setVisible(false);
         plot = (CategoryPlot) chart.getPlot();
+
         domainAxis = plot.getDomainAxis();
         domainAxis.setTickMarksVisible(false);
         domainAxis.setTickLabelsVisible(false);
+
+        renderer = (BarRenderer) plot.getRenderer();
+        renderer.setBarPainter(new StandardBarPainter());
+        renderer.setSeriesPaint(0, new Color(10,25,200));
 
         chartPanel = new ChartPanel(chart);
         chartPanel.setPreferredSize(new Dimension(1680, 600));
@@ -41,17 +50,12 @@ public class Visualization {
         SwingUtilities.invokeLater(() -> {
             dataset.clear();
             if (data.length == 3) {
-                domainAxis.setTickMarksVisible(true);
-                domainAxis.setTickLabelsVisible(true);
-                xlab = "Method";
-                domainAxis.setLabel(xlab);
+                setComparisonChart();
                 for (int i = 0; i < data.length; i++) {
                     dataset.addValue(data[i], xlab, labels[i]);
                 }
             } else if (data.length > 0) {
-                domainAxis.setTickMarksVisible(false);
-                domainAxis.setTickLabelsVisible(false);
-                domainAxis.setLabel("Number");
+                setSortingChart();
                 for (int i = 0; i < data.length; i++) {
                     dataset.addValue(data[i], "", String.valueOf(i));
                 }
@@ -61,5 +65,18 @@ public class Visualization {
 
     public ChartPanel getChartPanel() {
         return chartPanel;
+    }
+
+    private void setComparisonChart() {
+        domainAxis.setTickMarksVisible(true);
+        domainAxis.setTickLabelsVisible(true);
+        xlab = "Method";
+        domainAxis.setLabel(xlab);
+    }
+
+    private void setSortingChart() {
+        domainAxis.setTickMarksVisible(false);
+        domainAxis.setTickLabelsVisible(false);
+        domainAxis.setLabel("Number");
     }
 }
