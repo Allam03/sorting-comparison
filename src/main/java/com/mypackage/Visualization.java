@@ -8,6 +8,8 @@ import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.data.category.DefaultCategoryDataset;
 import java.awt.*;
 
+import javax.swing.SwingUtilities;
+
 public class Visualization {
     private ChartPanel chartPanel;
     private JFreeChart chart;
@@ -33,19 +35,21 @@ public class Visualization {
     }
 
     public void updatePlot(int[] data) {
-        dataset.clear();
-        if (data.length == 3) {
-            xlab = "Method";
-            domainAxis.setLabel(xlab);
-            for (int i = 0; i < data.length; i++) {
-                dataset.addValue(data[i], xlab, labels[i]);
+        SwingUtilities.invokeLater(() -> {
+            dataset.clear();
+            if (data.length == 3) {
+                xlab = "Method";
+                domainAxis.setLabel(xlab);
+                for (int i = 0; i < data.length; i++) {
+                    dataset.addValue(data[i], xlab, labels[i]);
+                }
+            } else if (data.length > 0) {
+                xlab = "Number";
+                for (int i = 0; i < data.length; i++) {
+                    dataset.addValue(data[i], xlab, String.valueOf(i));
+                }
             }
-        } else if (data.length > 0) {
-            xlab = "Number";
-            for (int i = 0; i < data.length; i++) {
-                dataset.addValue(data[i], xlab, String.valueOf(i));
-            }
-        }
+        });
     }
 
     public ChartPanel getChartPanel() {
