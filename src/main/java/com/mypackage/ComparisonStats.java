@@ -24,76 +24,83 @@ public class ComparisonStats {
         return comparisonStats;
     }
 
-    public void compareRuntime(String method) {
+    public void runtime(String method) {
         switch (method) {
             case "Counting":
-                countingSortCompareRuntime();
+                countingSortRuntime();
                 break;
             case "Bubble":
-                bubbleSortCompareRuntime();
+                bubbleSortRuntime();
                 break;
             case "Quick":
-                quickSortCompareRuntime();
+                quickSortRuntime();
                 break;
             default:
                 break;
         }
     }
 
-    private void countingSortCompareRuntime() {
+    private void countingSortRuntime() {
+        reset(swaps_comparisons);
         time = System.currentTimeMillis();
         Sorting.countingSort(randomArray);
         time = System.currentTimeMillis() - time;
         comparisonStats[0] = (int) time;
 
+        reset(swaps_comparisons);
         time = System.currentTimeMillis();
         Sorting.countingSort(inverselySortedArray);
         time = System.currentTimeMillis() - time;
         comparisonStats[1] = (int) time;
-
+        
+        reset(swaps_comparisons);
         time = System.currentTimeMillis();
         Sorting.countingSort(sortedArray);
         time = System.currentTimeMillis() - time;
         comparisonStats[2] = (int) time;
     }
 
-    private void bubbleSortCompareRuntime() {
+    private void bubbleSortRuntime() {
+        reset(swaps_comparisons);
         time = System.currentTimeMillis();
         Sorting.bubbleSort(randomArray, swaps_comparisons);
         time = System.currentTimeMillis() - time;
         comparisonStats[0] = (int) time;
 
+        reset(swaps_comparisons);
         time = System.currentTimeMillis();
         Sorting.bubbleSort(inverselySortedArray, swaps_comparisons);
         time = System.currentTimeMillis() - time;
         comparisonStats[1] = (int) time;
 
+        reset(swaps_comparisons);
         time = System.currentTimeMillis();
         Sorting.bubbleSort(sortedArray, swaps_comparisons);
         time = System.currentTimeMillis() - time;
         comparisonStats[2] = (int) time;
     }
 
-    private void quickSortCompareRuntime() {
+    private void quickSortRuntime() {
+        reset(swaps_comparisons);
         time = System.currentTimeMillis();
         Sorting.quickSort(randomArray, 0, length - 1, swaps_comparisons);
         time = System.currentTimeMillis() - time;
         comparisonStats[0] = (int) time;
 
+        reset(swaps_comparisons);
         time = System.currentTimeMillis();
         Sorting.quickSort(inverselySortedArray, 0, length - 1, swaps_comparisons);
         time = System.currentTimeMillis() - time;
         comparisonStats[1] = (int) time;
 
+        reset(swaps_comparisons);
         time = System.currentTimeMillis();
         Sorting.quickSort(sortedArray, 0, length - 1, swaps_comparisons);
         time = System.currentTimeMillis() - time;
         comparisonStats[2] = (int) time;
     }
 
-    public void compareSwaps(String method) {
-        swaps_comparisons[0] = 0;
-        swaps_comparisons[1] = 0;
+    public void swaps(String method) {
         isSwap = true;
         switch (method) {
             case "Counting":
@@ -102,11 +109,11 @@ public class ComparisonStats {
                 break;
 
             case "Bubble":
-                bubbleSortCompareSwapsComparisons();
+                bubbleSortStats();
                 break;
 
             case "Quick":
-                quickSortCompareSwapsComparisons();
+                quickSortStats();
                 break;
 
             default:
@@ -114,9 +121,7 @@ public class ComparisonStats {
         }
     }
 
-    public void compareComparisons(String method) {
-        swaps_comparisons[0] = 0;
-        swaps_comparisons[1] = 0;
+    public void comparisons(String method) {
         isSwap = false;
         switch (method) {
             case "Counting":
@@ -125,11 +130,11 @@ public class ComparisonStats {
                 break;
 
             case "Bubble":
-                bubbleSortCompareSwapsComparisons();
+                bubbleSortStats();
                 break;
 
             case "Quick":
-                quickSortCompareSwapsComparisons();
+                quickSortStats();
                 break;
 
             default:
@@ -137,7 +142,7 @@ public class ComparisonStats {
         }
     }
 
-    private void bubbleSortCompareSwapsComparisons() {
+    private void bubbleSortStats() {
         int index;
         if (isSwap) {
             index = 0;
@@ -145,30 +150,41 @@ public class ComparisonStats {
             index = 1;
         }
 
+        reset(swaps_comparisons);
         Sorting.bubbleSort(randomArray, swaps_comparisons);
         comparisonStats[0] = swaps_comparisons[index];
 
+        reset(swaps_comparisons);
         Sorting.bubbleSort(inverselySortedArray, swaps_comparisons);
         comparisonStats[1] = swaps_comparisons[index];
 
+        reset(swaps_comparisons);
         Sorting.bubbleSort(sortedArray, swaps_comparisons);
         comparisonStats[2] = swaps_comparisons[index];
     }
 
-    private void quickSortCompareSwapsComparisons() {
+    private void quickSortStats() {
         int index;
         if (isSwap) {
             index = 0;
         } else {
             index = 1;
         }
+        reset(swaps_comparisons);
         Sorting.quickSort(randomArray, 0, length - 1, swaps_comparisons);
         comparisonStats[0] = swaps_comparisons[index];
 
+        reset(swaps_comparisons);
         Sorting.quickSort(inverselySortedArray, 0, length - 1, swaps_comparisons);
         comparisonStats[1] = swaps_comparisons[index];
 
+        reset(swaps_comparisons);
         Sorting.quickSort(sortedArray, 0, length - 1, swaps_comparisons);
         comparisonStats[2] = swaps_comparisons[index];
+    }
+
+    private void reset(int[] array){
+        array[0] = 0;
+        array[1] = 0;
     }
 }

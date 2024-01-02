@@ -40,6 +40,7 @@ public class Sorting {
 
     public static void bubbleSort(int array[], int[] swaps_comparisons) {
         int prevSwaps = 0;
+        resetSwapsComparisons(swaps_comparisons);
 
         for (int i = 0; i < array.length - 1; i++) {
             for (int j = 0; j < array.length - i - 1; j++) {
@@ -82,5 +83,10 @@ public class Sorting {
         swap(array, i + 1, highIndex);
         swaps_comparisons[0]++;
         return i + 1;
+    }
+
+    private static void resetSwapsComparisons(int[] array){
+        array[0] = 0;
+        array[1] = 0;
     }
 }

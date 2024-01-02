@@ -330,17 +330,17 @@ public class GUI extends JFrame implements ActionListener {
         switch (stat) {
             case "Runtime":
                 parameter = "ms";
-                compare.compareRuntime(method);
+                compare.runtime(method);
                 break;
 
             case "Swaps":
                 parameter = "swaps";
-                compare.compareSwaps(method);
+                compare.swaps(method);
                 break;
 
             case "Comparisons":
                 parameter = "comparisons";
-                compare.compareComparisons(method);
+                compare.comparisons(method);
                 break;
 
             default:

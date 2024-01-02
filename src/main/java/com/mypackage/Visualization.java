@@ -6,14 +6,13 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.data.category.DefaultCategoryDataset;
-
 import java.awt.*;
 
 public class Visualization {
     private ChartPanel chartPanel;
     private JFreeChart chart;
     private DefaultCategoryDataset dataset;
-    private String[] labels = { "Random", "Sorted", "Inversely Sorted" };
+    private String[] labels = { "Random", "Inversely Sorted", "Sorted" };
     CategoryPlot plot;
     CategoryAxis domainAxis;
     String xlab;
@@ -31,7 +30,6 @@ public class Visualization {
 
         chartPanel = new ChartPanel(chart);
         chartPanel.setPreferredSize(new Dimension(1680, 600));
-
     }
 
     public void updatePlot(int[] data) {
