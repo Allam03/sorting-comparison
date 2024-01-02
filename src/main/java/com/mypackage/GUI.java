@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,26 +19,25 @@ public class GUI extends JFrame implements ActionListener {
     private Visualization viz;
     private SwingWorker<Void, Void> currentWorker;
     private Map<Object, Runnable> actionMap;
+    private ArrayList<Component> inputComponents;
     private int[] randomArray, array, comparisonStats, swaps_comparisons;
     private long time;
     private int length, delay;
-    String method, stat, parameter;
-
+    private String method, stat, parameter;
+    
     public GUI() {
         setTitle("Sorting Algorithms");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1680, 800);
-        setLocationRelativeTo(null);
-        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, createTopPanel(), createVisualizationPanel());
-        splitPane.setResizeWeight(0.5);
-        add(splitPane);
+        add(createTopPanel(), BorderLayout.NORTH);
+        add(createVisualizationPanel(), BorderLayout.CENTER);
         setVisible(true);
 
+        delay = 100;
+        length = 10;
+        randomArray = ArrayGenerator.generateRandom(length);
         swaps_comparisons = new int[] { 0, 0 };
         comparisonStats = new int[] { 0, 0, 0 };
-        length = 10;
-        delay = 50;
-        randomArray = ArrayGenerator.generateRandom(length);
 
         actionMap = new HashMap<>();
         actionMap.put(arrayLengthField, () -> updateArrayLength());
@@ -46,6 +46,12 @@ public class GUI extends JFrame implements ActionListener {
         actionMap.put(randomizeArrayButton, () -> randomizeArray());
         actionMap.put(abortButton, () -> performAbort());
         actionMap.put(compareButton, () -> performCompare());
+    }
+
+    private void addToPanel(ArrayList<Component> components, JPanel panel) {
+        for (Component c : components) {
+            panel.add(c);
+        }
     }
 
     private JPanel createInputPanel() {
@@ -58,34 +64,26 @@ public class GUI extends JFrame implements ActionListener {
                 updateArrayLength();
             }
         });
-        delayField = new JTextField("50", 5);
+
+        delayField = new JTextField("100", 5);
         delayField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
                 updateDelay();
             }
         });
+
         inputPanel.add(new JLabel("Array Length: "));
         inputPanel.add(arrayLengthField);
+
         inputPanel.add(new JLabel("Delay in ms: "));
         inputPanel.add(delayField);
+
         return inputPanel;
     }
 
-    private JPanel createTopPanel() {
-        JPanel panel = new JPanel(new BorderLayout());
-        JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        resultLabel = new JLabel();
-
-        labelPanel.add(resultLabel);
-        panel.add(labelPanel, BorderLayout.SOUTH);
-        panel.add(createInputPanel(), BorderLayout.CENTER);
-        panel.add(createButtonPanel(), BorderLayout.NORTH);
-        return panel;
-    }
-
     private JPanel createButtonPanel() {
-        JPanel buttonPanel = new JPanel(new GridLayout(1, 4));
+        JPanel buttonPanel = new JPanel(new GridLayout());
         sortButton = new JButton("Sort");
         randomizeArrayButton = new JButton("Randomize Array");
         visualizeCheckBox = new JCheckBox("Visualize");
@@ -96,13 +94,16 @@ public class GUI extends JFrame implements ActionListener {
         String[] statOptions = { "Runtime", "Swaps", "Comparisons" };
         statMenu = new JComboBox<>(statOptions);
 
-        buttonPanel.add(sortButton);
-        buttonPanel.add(methodMenu);
-        buttonPanel.add(abortButton);
-        buttonPanel.add(randomizeArrayButton);
-        buttonPanel.add(compareButton);
-        buttonPanel.add(statMenu);
-        buttonPanel.add(visualizeCheckBox);
+        inputComponents = new ArrayList<>();
+        inputComponents.add(sortButton);
+        inputComponents.add(methodMenu);
+        inputComponents.add(abortButton);
+        inputComponents.add(randomizeArrayButton);
+        inputComponents.add(compareButton);
+        inputComponents.add(statMenu);
+        inputComponents.add(visualizeCheckBox);
+
+        addToPanel(inputComponents, buttonPanel);
 
         sortButton.addActionListener(this);
         randomizeArrayButton.addActionListener(this);
@@ -114,10 +115,23 @@ public class GUI extends JFrame implements ActionListener {
     }
 
     private JPanel createVisualizationPanel() {
-        JPanel visualizationPanel = new JPanel(new BorderLayout());
+        JPanel vizPanel = new JPanel(new BorderLayout());
         viz = new Visualization();
-        visualizationPanel.add(viz.getChartPanel(), BorderLayout.CENTER);
-        return visualizationPanel;
+        vizPanel.add(viz.getChartPanel(), BorderLayout.CENTER);
+        return vizPanel;
+    }
+
+    private JPanel createTopPanel() {
+        JPanel topPanel = new JPanel(new BorderLayout());
+        JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        resultLabel = new JLabel();
+
+        labelPanel.add(resultLabel);
+
+        topPanel.add(labelPanel, BorderLayout.SOUTH);
+        topPanel.add(createInputPanel(), BorderLayout.CENTER);
+        topPanel.add(createButtonPanel(), BorderLayout.NORTH);
+        return topPanel;
     }
 
     @Override
@@ -129,25 +143,16 @@ public class GUI extends JFrame implements ActionListener {
     }
 
     public void disableInput() {
-        sortButton.setEnabled(false);
-        randomizeArrayButton.setEnabled(false);
-        arrayLengthField.setEnabled(false);
-        delayField.setEnabled(false);
-        visualizeCheckBox.setEnabled(false);
-        compareButton.setEnabled(false);
-        methodMenu.setEnabled(false);
-        statMenu.setEnabled(false);
+        for (Component c : inputComponents) {
+            c.setEnabled(false);
+        }
+        abortButton.setEnabled(true);
     }
 
     public void enableInput() {
-        sortButton.setEnabled(true);
-        randomizeArrayButton.setEnabled(true);
-        arrayLengthField.setEnabled(true);
-        delayField.setEnabled(true);
-        visualizeCheckBox.setEnabled(true);
-        compareButton.setEnabled(true);
-        methodMenu.setEnabled(true);
-        statMenu.setEnabled(true);
+        for (Component c : inputComponents) {
+            c.setEnabled(true);
+        }
     }
 
     public void randomizeArray() {
@@ -183,17 +188,21 @@ public class GUI extends JFrame implements ActionListener {
 
     public void performSort() {
         method = (String) methodMenu.getSelectedItem();
-        if (method.equals("Counting")) {
-            performCountingSort();
-            return;
-        }
-        if (method.equals("Bubble")) {
-            performBubbleSort();
-            return;
-        }
-        if (method.equals("Quick")) {
-            performQuickSort();
-            return;
+        switch (method) {
+            case "Counting":
+                performCountingSort();
+                break;
+
+            case "Bubble":
+                performBubbleSort();
+                break;
+
+            case "Quick":
+                performQuickSort();
+                break;
+
+            default:
+                break;
         }
     }
 
@@ -202,9 +211,11 @@ public class GUI extends JFrame implements ActionListener {
         array = randomArray.clone();
         swaps_comparisons[0] = 0;
         swaps_comparisons[1] = 0;
+
         time = System.currentTimeMillis();
         Sorting.countingSort(array);
         time = System.currentTimeMillis() - time;
+
         resultLabel.setText(time + "ms, " +
                 swaps_comparisons[0] + " Swaps, " +
                 swaps_comparisons[1] + " Comparisons.");
@@ -237,9 +248,11 @@ public class GUI extends JFrame implements ActionListener {
         array = randomArray.clone();
         swaps_comparisons[0] = 0;
         swaps_comparisons[1] = 0;
+
         time = System.currentTimeMillis();
         Sorting.bubbleSort(array, swaps_comparisons);
         time = System.currentTimeMillis() - time;
+
         resultLabel.setText(time + "ms, " +
                 swaps_comparisons[0] + " Swaps, " +
                 swaps_comparisons[1] + " Comparisons.");
@@ -271,9 +284,11 @@ public class GUI extends JFrame implements ActionListener {
         array = randomArray.clone();
         swaps_comparisons[0] = 0;
         swaps_comparisons[1] = 0;
+
         time = System.currentTimeMillis();
         Sorting.quickSort(array, 0, array.length - 1, swaps_comparisons);
         time = System.currentTimeMillis() - time;
+
         resultLabel.setText(time + "ms, " +
                 swaps_comparisons[0] + " Swaps, " +
                 swaps_comparisons[1] + " Comparisons.");
@@ -333,8 +348,9 @@ public class GUI extends JFrame implements ActionListener {
         }
         comparisonStats = compare.getComparisonStats();
         printResult();
-        if (visualizeCheckBox.isSelected())
+        if (visualizeCheckBox.isSelected()) {
             viz.updatePlot(comparisonStats);
+        }
     }
 
     private void printResult() {

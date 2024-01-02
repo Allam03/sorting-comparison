@@ -42,7 +42,7 @@ public class Visualization {
             for (int i = 0; i < data.length; i++) {
                 dataset.addValue(data[i], xlab, labels[i]);
             }
-        } else {
+        } else if (data.length > 0) {
             xlab = "Number";
             for (int i = 0; i < data.length; i++) {
                 dataset.addValue(data[i], xlab, String.valueOf(i));

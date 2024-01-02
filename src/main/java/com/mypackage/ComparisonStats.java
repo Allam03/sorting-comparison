@@ -139,10 +139,11 @@ public class ComparisonStats {
 
     private void bubbleSortCompareSwapsComparisons() {
         int index;
-        if (isSwap)
+        if (isSwap) {
             index = 0;
-        else
+        } else {
             index = 1;
+        }
 
         Sorting.bubbleSort(randomArray, swaps_comparisons);
         comparisonStats[0] = swaps_comparisons[index];
@@ -156,11 +157,11 @@ public class ComparisonStats {
 
     private void quickSortCompareSwapsComparisons() {
         int index;
-        if (isSwap)
+        if (isSwap) {
             index = 0;
-        else
+        } else {
             index = 1;
-
+        }
         Sorting.quickSort(randomArray, 0, length - 1, swaps_comparisons);
         comparisonStats[0] = swaps_comparisons[index];
 
