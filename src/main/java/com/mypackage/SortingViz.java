@@ -1,6 +1,7 @@
 package com.mypackage;
 
 import java.util.Arrays;
+import java.util.Random;
 
 public class SortingViz {
     public static void swap(int[] array, int i, int j) throws InterruptedException {
@@ -67,9 +68,13 @@ public class SortingViz {
 
     private static int partition(int[] array, int lowIndex, int highIndex, Visualization viz, int delay)
             throws InterruptedException {
+        Random rand = new Random();
+        int pivotIndex = lowIndex + rand.nextInt(highIndex - lowIndex + 1);
+        swap(array, pivotIndex, highIndex);
+        viz.updatePlot(array);
+        Thread.sleep(delay);
         int pivot = array[highIndex];
         int i = lowIndex - 1;
-
         for (int j = lowIndex; j < highIndex; j++) {
             if (array[j] < pivot) {
                 i++;
