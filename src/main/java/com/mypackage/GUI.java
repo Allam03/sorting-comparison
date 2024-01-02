@@ -4,8 +4,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -58,20 +56,7 @@ public class GUI extends JFrame implements ActionListener {
         JPanel inputPanel = new JPanel();
 
         arrayLengthField = new JTextField("100", 10);
-        arrayLengthField.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusLost(FocusEvent e) {
-                updateArrayLength();
-            }
-        });
-
         delayField = new JTextField("25", 5);
-        delayField.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusLost(FocusEvent e) {
-                updateDelay();
-            }
-        });
 
         inputPanel.add(new JLabel("Array Length: "));
         inputPanel.add(arrayLengthField);
@@ -143,6 +128,8 @@ public class GUI extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        updateArrayLength();
+        updateDelay();
         Runnable action = actionMap.get(e.getSource());
         if (action != null) {
             action.run();
