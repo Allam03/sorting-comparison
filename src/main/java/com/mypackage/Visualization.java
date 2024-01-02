@@ -27,8 +27,11 @@ public class Visualization {
                 "Value",
                 dataset);
 
+        chart.getLegend().setVisible(false);
         plot = (CategoryPlot) chart.getPlot();
         domainAxis = plot.getDomainAxis();
+        domainAxis.setTickMarksVisible(false);
+        domainAxis.setTickLabelsVisible(false);
 
         chartPanel = new ChartPanel(chart);
         chartPanel.setPreferredSize(new Dimension(1680, 600));
@@ -38,15 +41,19 @@ public class Visualization {
         SwingUtilities.invokeLater(() -> {
             dataset.clear();
             if (data.length == 3) {
+                domainAxis.setTickMarksVisible(true);
+                domainAxis.setTickLabelsVisible(true);
                 xlab = "Method";
                 domainAxis.setLabel(xlab);
                 for (int i = 0; i < data.length; i++) {
                     dataset.addValue(data[i], xlab, labels[i]);
                 }
             } else if (data.length > 0) {
-                xlab = "Number";
+                domainAxis.setTickMarksVisible(false);
+                domainAxis.setTickLabelsVisible(false);
+                domainAxis.setLabel("Number");
                 for (int i = 0; i < data.length; i++) {
-                    dataset.addValue(data[i], xlab, String.valueOf(i));
+                    dataset.addValue(data[i], "", String.valueOf(i));
                 }
             }
         });

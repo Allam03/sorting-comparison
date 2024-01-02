@@ -33,8 +33,8 @@ public class GUI extends JFrame implements ActionListener {
         add(createVisualizationPanel(), BorderLayout.CENTER);
         setVisible(true);
 
-        delay = 100;
-        length = 10;
+        delay = 25;
+        length = 100;
         randomArray = ArrayGenerator.generateRandom(length);
         swaps_comparisons = new int[] { 0, 0 };
         comparisonStats = new int[] { 0, 0, 0 };
@@ -57,7 +57,7 @@ public class GUI extends JFrame implements ActionListener {
     private JPanel createInputPanel() {
         JPanel inputPanel = new JPanel();
 
-        arrayLengthField = new JTextField("10", 10);
+        arrayLengthField = new JTextField("100", 10);
         arrayLengthField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
@@ -65,7 +65,7 @@ public class GUI extends JFrame implements ActionListener {
             }
         });
 
-        delayField = new JTextField("100", 5);
+        delayField = new JTextField("25", 5);
         delayField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
