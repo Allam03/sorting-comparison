@@ -182,6 +182,7 @@ public class GUI extends JFrame implements ActionListener {
 
     public void performSort() {
         method = (String) methodMenu.getSelectedItem();
+        viz.setChartTitle(method);
         switch (method) {
             case "Counting":
                 performCountingSort();
@@ -320,6 +321,7 @@ public class GUI extends JFrame implements ActionListener {
     private void performCompare() {
         stat = (String) statMenu.getSelectedItem();
         method = (String) methodMenu.getSelectedItem();
+        viz.setChartTitle(method);
         ComparisonStats compare = new ComparisonStats(randomArray, swaps_comparisons);
         switch (stat) {
             case "Runtime":

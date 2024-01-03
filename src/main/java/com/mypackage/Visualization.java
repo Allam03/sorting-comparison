@@ -36,10 +36,9 @@ public class Visualization {
         domainAxis = plot.getDomainAxis();
         domainAxis.setTickMarksVisible(false);
         domainAxis.setTickLabelsVisible(false);
-
         renderer = (BarRenderer) plot.getRenderer();
         renderer.setBarPainter(new StandardBarPainter());
-        renderer.setSeriesPaint(0, new Color(10,25,200));
+        renderer.setSeriesPaint(0, new Color(10, 25, 200));
 
         chartPanel = new ChartPanel(chart);
         chartPanel.setPreferredSize(new Dimension(1680, 600));
@@ -60,6 +59,10 @@ public class Visualization {
                 }
             }
         });
+    }
+
+    public void setChartTitle(String title) {
+        chart.setTitle(title);
     }
 
     public ChartPanel getChartPanel() {
