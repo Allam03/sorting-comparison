@@ -18,24 +18,23 @@ public class Sorting {
 
     public static void countingSort(int[] array) {
         int max = Arrays.stream(array).max().orElse(0);
-        int min = Arrays.stream(array).min().orElse(0);
-        int range = max - min + 1;
-        int[] count = new int[range];
-
         for (int i = 0; i < array.length; i++) {
-            count[array[i] - min]++;
+            max = Math.max(max, array[i]);
         }
-        for (int i = 1; i < range; i++) {
-            count[i] += count[i - 1];
+
+        int[] countArray = new int[max + 1];
+        for (int i = 0; i < array.length; i++) {
+            countArray[array[i]]++;
         }
+        for (int i = 1; i <= max; i++) {
+            countArray[i] += countArray[i - 1];
+        }
+
         int[] sortedArray = new int[array.length];
-        int index;
         for (int i = array.length - 1; i >= 0; i--) {
-            index = array[i] - min;
-            sortedArray[count[index] - 1] = array[i];
-            count[index]--;
+            sortedArray[countArray[array[i]] - 1] = array[i];
+            countArray[array[i]]--;
         }
-        System.arraycopy(sortedArray, 0, array, 0, array.length);
     }
 
     public static void bubbleSort(int array[], int[] swaps_comparisons) {
